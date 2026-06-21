@@ -1,0 +1,274 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #7288AE;
+  --color-surface: #4B5694;
+  --color-primary: #111844;
+  --color-primary-hover: #0D1336;
+  --color-accent: #4B5694;
+  --color-text: #F8FAFC;
+  --color-muted: #111844;
+  --color-border: #1A1A2E;
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+
+  --font-sans: "Space Grotesk", sans-serif;
+
+  --radius-sm: 20px;
+  --radius-md: 28px;
+  --radius-lg: 36px;
+
+  --shadow-neo: 8px 8px 0px var(--color-border);
+  --shadow-neo-hover: 10px 10px 0px var(--color-border);
+}
+
+@layer base {
+  [data-theme='cyberpunk'] {
+    --color-background: #FDE047;
+    --color-surface: #000000;
+    --color-primary: #22C55E;
+    --color-primary-hover: #16A34A;
+    --color-accent: #EAB308;
+    --color-text: #F8FAFC;
+    --color-muted: #A3E635;
+    --color-border: #1A1A2E;
+  }
+
+  [data-theme='retro'] {
+    --color-background: #FEF08A;
+    --color-surface: #F97316;
+    --color-primary: #DC2626;
+    --color-primary-hover: #B91C1C;
+    --color-accent: #FCA5A5;
+    --color-text: #1A1A2E;
+    --color-muted: #7F1D1D;
+    --color-border: #450A0A;
+  }
+
+  [data-theme='midnight'] {
+    --color-background: #022C22;
+    --color-surface: #064E3B;
+    --color-primary: #10B981;
+    --color-primary-hover: #059669;
+    --color-accent: #34D399;
+    --color-text: #ECFDF5;
+    --color-muted: #A7F3D0;
+    --color-border: #065F46;
+  }
+  
+  [data-theme='bubblegum'] {
+    --color-background: #FDF2F8;
+    --color-surface: #FCE7F3;
+    --color-primary: #EC4899;
+    --color-primary-hover: #DB2777;
+    --color-accent: #F472B6;
+    --color-text: #831843;
+    --color-muted: #BE185D;
+    --color-border: #9D174D;
+  }
+
+  [data-theme='solar'] {
+    --color-background: #FEF3C7;
+    --color-surface: #FDE68A;
+    --color-primary: #D97706;
+    --color-primary-hover: #B45309;
+    --color-accent: #FBBF24;
+    --color-text: #78350F;
+    --color-muted: #92400E;
+    --color-border: #78350F;
+  }
+
+  [data-theme='ocean'] {
+    --color-background: #164E63;
+    --color-surface: #083344;
+    --color-primary: #06B6D4;
+    --color-primary-hover: #0891B2;
+    --color-accent: #22D3EE;
+    --color-text: #CFFAFE;
+    --color-muted: #67E8F9;
+    --color-border: #155E75;
+  }
+
+  [data-theme='lavender'] {
+    --color-background: #F5F3FF;
+    --color-surface: #EDE9FE;
+    --color-primary: #8B5CF6;
+    --color-primary-hover: #7C3AED;
+    --color-accent: #A78BFA;
+    --color-text: #4C1D95;
+    --color-muted: #6D28D9;
+    --color-border: #5B21B6;
+  }
+
+  [data-theme='synthwave'] {
+    --color-background: #2E1065;
+    --color-surface: #170F49;
+    --color-primary: #D946EF;
+    --color-primary-hover: #C026D3;
+    --color-accent: #F0ABFC;
+    --color-text: #FAE8FF;
+    --color-muted: #E879F9;
+    --color-border: #4A044E;
+  }
+
+  [data-theme='forest'] {
+    --color-background: #14532D;
+    --color-surface: #064E3B;
+    --color-primary: #22C55E;
+    --color-primary-hover: #16A34A;
+    --color-accent: #4ADE80;
+    --color-text: #F0FDF4;
+    --color-muted: #86EFAC;
+    --color-border: #166534;
+  }
+
+  [data-theme='monochrome'] {
+    --color-background: #FFFFFF;
+    --color-surface: #F3F4F6;
+    --color-primary: #000000;
+    --color-primary-hover: #374151;
+    --color-accent: #4B5563;
+    --color-text: #000000;
+    --color-muted: #6B7280;
+    --color-border: #000000;
+  }
+
+  [data-theme='vampire'] {
+    --color-background: #450A0A;
+    --color-surface: #000000;
+    --color-primary: #991B1B;
+    --color-primary-hover: #7F1D1D;
+    --color-accent: #DC2626;
+    --color-text: #FEF2F2;
+    --color-muted: #FCA5A5;
+    --color-border: #7F1D1D;
+  }
+
+  [data-theme='tokyo'] {
+    --color-background: #020617;
+    --color-surface: #0F172A;
+    --color-primary: #F43F5E;
+    --color-primary-hover: #E11D48;
+    --color-accent: #FB7185;
+    --color-text: #F8FAFC;
+    --color-muted: #CBD5E1;
+    --color-border: #334155;
+  }
+
+  [data-theme='matcha'] {
+    --color-background: #F7FEE7;
+    --color-surface: #ECFCCB;
+    --color-primary: #84CC16;
+    --color-primary-hover: #65A30D;
+    --color-accent: #A3E635;
+    --color-text: #3F6212;
+    --color-muted: #4D7C0F;
+    --color-border: #365314;
+  }
+
+  [data-theme='terminal'] {
+    --color-background: #000000;
+    --color-surface: #064E3B;
+    --color-primary: #4ADE80;
+    --color-primary-hover: #22C55E;
+    --color-accent: #86EFAC;
+    --color-text: #4ADE80;
+    --color-muted: #22C55E;
+    --color-border: #4ADE80;
+  }
+
+  [data-theme='sunset'] {
+    --color-background: #FFF7ED;
+    --color-surface: #FFEDD5;
+    --color-primary: #F97316;
+    --color-primary-hover: #EA580C;
+    --color-accent: #FDBA74;
+    --color-text: #7C2D12;
+    --color-muted: #9A3412;
+    --color-border: #C2410C;
+  }
+
+  [data-theme='arctic'] {
+    --color-background: #F0F9FF;
+    --color-surface: #E0F2FE;
+    --color-primary: #38BDF8;
+    --color-primary-hover: #0EA5E9;
+    --color-accent: #7DD3FC;
+    --color-text: #0C4A6E;
+    --color-muted: #0369A1;
+    --color-border: #0284C7;
+  }
+
+  [data-theme='halloween'] {
+    --color-background: #000000;
+    --color-surface: #2E1065;
+    --color-primary: #EA580C;
+    --color-primary-hover: #C2410C;
+    --color-accent: #F97316;
+    --color-text: #FFF7ED;
+    --color-muted: #FDBA74;
+    --color-border: #4A044E;
+  }
+
+  [data-theme='royal'] {
+    --color-background: #3B0764;
+    --color-surface: #2E1065;
+    --color-primary: #EAB308;
+    --color-primary-hover: #CA8A04;
+    --color-accent: #FDE047;
+    --color-text: #FEF08A;
+    --color-muted: #FEF9C3;
+    --color-border: #581C87;
+  }
+
+  [data-theme='coffee'] {
+    --color-background: #FEF3C7;
+    --color-surface: #FDE68A;
+    --color-primary: #B45309;
+    --color-primary-hover: #92400E;
+    --color-accent: #D97706;
+    --color-text: #451A03;
+    --color-muted: #78350F;
+    --color-border: #78350F;
+  }
+}
+
+/* Base styles for dark mode */
+@layer base {
+  *, *::before, *::after {
+    cursor: none !important;
+  }
+  
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+  }
+}
+
+/* Utility to apply neo-brutalist border and background */
+@layer utilities {
+  .neo-brutalist-border {
+    border: 2px solid var(--color-border);
+  }
+  
+  .neo-brutalist-shadow {
+    box-shadow: var(--shadow-neo);
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .neo-brutalist-shadow:hover {
+    box-shadow: var(--shadow-neo-hover);
+    transform: translate(-2px, -2px);
+  }
+
+  .neo-brutalist-shadow-sm {
+    box-shadow: 4px 4px 0px #000000;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .neo-brutalist-shadow-sm:hover {
+    box-shadow: 6px 6px 0px #000000;
+    transform: translate(-1px, -1px);
+  }
+}
