@@ -6,52 +6,60 @@ import { ArrowLeft, Play, Pause, RotateCcw, Coffee, Brain, Music, AlertCircle } 
 import { Button } from "@/components/ui/Button";
 
 export default function FocusRoomPage() {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [focusTime, setFocusTime] = useState(25 * 60);
+  const [breakTime, setBreakTime] = useState(5 * 60);
   const [isActive, setIsActive] = useState(false);
   const [mode, setMode] = useState<"focus" | "break">("focus");
   const [mediaUrl, setMediaUrl] = useState("");
   const [embedUrl, setEmbedUrl] = useState("");
 
+  const currentTime = mode === "focus" ? focusTime : breakTime;
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
     
-    if (isActive && timeLeft > 0) {
+    if (isActive && currentTime > 0) {
       interval = setInterval(() => {
-        setTimeLeft((time) => time - 1);
+        if (mode === "focus") {
+          setFocusTime((time) => time - 1);
+        } else {
+          setBreakTime((time) => time - 1);
+        }
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (currentTime === 0 && isActive) {
       // Auto switch modes and play sound
       try {
         const audio = new Audio('/notification.mp3'); // We might not have this, but standard practice
         audio.play().catch(() => {});
       } catch (e) {}
       
+      setIsActive(false);
       if (mode === "focus") {
         setMode("break");
-        setTimeLeft(5 * 60);
+        setFocusTime(25 * 60); // Reset timer yang sudah selesai
       } else {
         setMode("focus");
-        setTimeLeft(25 * 60);
+        setBreakTime(5 * 60); // Reset timer yang sudah selesai
       }
-      setIsActive(false);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isActive, timeLeft, mode]);
+  }, [isActive, currentTime, mode]);
 
   const toggleTimer = () => setIsActive(!isActive);
   
   const resetTimer = () => {
     setIsActive(false);
-    setTimeLeft(mode === "focus" ? 25 * 60 : 5 * 60);
+    if (mode === "focus") setFocusTime(25 * 60);
+    else setBreakTime(5 * 60);
   };
 
   const setTimerMode = (newMode: "focus" | "break") => {
     setIsActive(false);
     setMode(newMode);
-    setTimeLeft(newMode === "focus" ? 25 * 60 : 5 * 60);
+    // Timer tidak di-reset agar bisa kembali ke progres sebelumnya
   };
 
   const formatTime = (seconds: number) => {
@@ -127,7 +135,7 @@ export default function FocusRoomPage() {
             </div>
 
             <div className={`text-8xl md:text-9xl font-black mb-8 tabular-nums tracking-tighter ${mode === "focus" ? "text-primary" : "text-green-500"}`}>
-              {formatTime(timeLeft)}
+              {formatTime(mode === "focus" ? focusTime : breakTime)}
             </div>
 
             <div className="flex gap-4">
