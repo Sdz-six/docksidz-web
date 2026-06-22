@@ -143,7 +143,7 @@ export function IpTracker() {
                   </div>
 
                   {/* Detail Info */}
-                  <div className="bg-white border-4 border-border rounded-2xl p-6 neo-brutalist-shadow-sm flex flex-col justify-center gap-4">
+                  <div className="bg-surface border-4 border-border rounded-2xl p-6 neo-brutalist-shadow-sm flex flex-col justify-center gap-4 text-foreground">
                     <div className="flex items-start gap-4">
                       <div className="bg-[#F59E0B]/20 p-3 rounded-lg"><Globe className="w-6 h-6 text-[#F59E0B]" /></div>
                       <div>
