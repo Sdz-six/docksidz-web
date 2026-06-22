@@ -139,13 +139,6 @@ const utilityTools = [
     description: "Timer belajar pintar dengan pemutar musik kustom untuk menemani Anda fokus.",
     icon: Brain,
     color: "bg-[#8B5CF6]",
-  },
-  {
-    id: "text-summarizer",
-    title: "Mesin Peringkas Jurnal",
-    description: "Ekstrak intisari artikel atau jurnal panjang secara otomatis dan instan.",
-    icon: FileText,
-    color: "bg-[#10B981]",
   }
 ];
 
