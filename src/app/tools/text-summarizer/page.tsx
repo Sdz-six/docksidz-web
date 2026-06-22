@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, FileText, Sparkles, Copy, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, FileText, Sparkles, Copy, CheckCircle2, AlertCircle, UploadCloud } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 // Indonesian Stopwords (Kata hubung umum yang tidak penting untuk skor)
@@ -14,6 +14,18 @@ export default function TextSummarizerPage() {
   const [ratio, setRatio] = useState(30); // Persentase ringkasan
   const [isProcessing, setIsProcessing] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      setInputText(text);
+    };
+    reader.readAsText(file);
+  };
 
   // Algoritma Extractive Summarization Bawaan (Berjalan 100% Offline di Browser)
   const summarizeText = () => {
@@ -122,9 +134,27 @@ export default function TextSummarizerPage() {
         {/* Left Panel: Input */}
         <div className="w-full lg:w-1/2 flex flex-col gap-4">
           <div className="bg-surface border-4 border-border rounded-3xl p-6 neo-brutalist-shadow h-full flex flex-col">
-            <h2 className="text-xl font-bold mb-4 flex items-center gap-2 border-b-2 border-border pb-3">
-              1. Masukkan Teks Asli
-            </h2>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b-2 border-border pb-3 gap-2">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                1. Masukkan Teks Asli
+              </h2>
+              <div>
+                <input 
+                  type="file" 
+                  accept=".txt,.md,.csv,.json" 
+                  id="file-upload" 
+                  className="hidden" 
+                  onChange={handleFileUpload} 
+                />
+                <label 
+                  htmlFor="file-upload" 
+                  className="cursor-pointer bg-background hover:bg-border border-2 border-border px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors text-muted hover:text-foreground"
+                >
+                  <UploadCloud className="w-4 h-4" />
+                  Unggah Dokumen (.txt)
+                </label>
+              </div>
+            </div>
             <textarea 
               className="flex-1 bg-background border-4 border-border rounded-xl p-4 resize-none outline-none focus:border-[#8B5CF6] font-mono text-sm leading-relaxed min-h-[300px]"
               placeholder="Tempel (Paste) teks jurnal, berita, atau materi kuliah yang panjang di sini..."
