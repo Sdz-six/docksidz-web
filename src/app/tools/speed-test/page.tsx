@@ -201,7 +201,7 @@ export default function SpeedTestPage() {
           {/* Big Number Center */}
           {testPhase !== "idle" && testPhase !== "done" && testPhase !== "error" && (
             <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 font-black text-4xl">
-              {speed !== null ? speed : 0}
+              {speed !== null ? `[${speed.toFixed(2)}]` : "[0.00]"}
             </div>
           )}
         </div>
@@ -219,7 +219,7 @@ export default function SpeedTestPage() {
           <div className={`bg-background border-2 border-border p-3 md:p-4 rounded-2xl neo-brutalist-shadow-sm flex flex-col items-center transition-opacity ${testPhase === "download" ? "opacity-100 ring-2 ring-[#3B82F6]" : "opacity-80"}`}>
             <span className="text-muted text-xs md:text-sm font-bold mb-1 flex items-center gap-1"><DownloadCloud className="w-3 h-3 md:w-4 md:h-4"/> DOWNLOAD</span>
             <span className="text-2xl md:text-4xl font-black text-[#3B82F6]">
-              {downloadSpeed !== null ? downloadSpeed : "--"}
+              {downloadSpeed !== null ? `[${downloadSpeed.toFixed(2)}]` : "--"}
             </span>
             <span className="text-xs md:text-sm font-bold mt-1">Mbps</span>
           </div>
@@ -227,7 +227,7 @@ export default function SpeedTestPage() {
           <div className={`bg-background border-2 border-border p-3 md:p-4 rounded-2xl neo-brutalist-shadow-sm flex flex-col items-center transition-opacity ${testPhase === "upload" ? "opacity-100 ring-2 ring-[#F59E0B]" : "opacity-80"}`}>
             <span className="text-muted text-xs md:text-sm font-bold mb-1 flex items-center gap-1"><UploadCloud className="w-3 h-3 md:w-4 md:h-4"/> UPLOAD</span>
             <span className="text-2xl md:text-4xl font-black text-[#F59E0B]">
-              {uploadSpeed !== null ? uploadSpeed : "--"}
+              {uploadSpeed !== null ? `[${uploadSpeed.toFixed(2)}]` : "--"}
             </span>
             <span className="text-xs md:text-sm font-bold mt-1">Mbps</span>
           </div>
