@@ -16,3 +16,17 @@ export async function GET() {
     },
   });
 }
+
+export async function POST(req: Request) {
+  // Read and discard to measure upload speed
+  try {
+    await req.arrayBuffer(); 
+  } catch(e) {}
+  
+  return new NextResponse(JSON.stringify({ status: "ok" }), { 
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    }
+  });
+}

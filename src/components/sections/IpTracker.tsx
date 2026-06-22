@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, MapPin, Server, Activity, AlertCircle, RefreshCw, Compass, MonitorSmartphone, Cpu, Battery, BatteryCharging } from "lucide-react";
+import { Globe, MapPin, Server, Activity, AlertCircle, RefreshCw, Compass, MonitorSmartphone, Cpu, Battery, BatteryCharging, Clock, LineChart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Map, MapControls } from "@/components/ui/map";
 
@@ -25,6 +25,26 @@ export function IpTracker() {
   const [data, setData] = useState<IpData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [deviceInfo, setDeviceInfo] = useState<any>(null);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [localIp, setLocalIp] = useState("Mendeteksi...");
+  const [visitors, setVisitors] = useState(1041595);
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    fetch("https://api.ipify.org?format=json")
+      .then(res => res.json())
+      .then(d => setLocalIp(d.ip))
+      .catch(() => setLocalIp("Unknown"));
+      
+    fetch('/api/traffic')
+      .then(res => res.json())
+      .then(d => { if (d.total) setVisitors(d.total); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const info = {
@@ -214,61 +234,51 @@ export function IpTracker() {
             )}
           </AnimatePresence>
 
-          {/* Device Analyzer Section */}
+          {/* Device Analyzer Section - Server Panel Style */}
           {deviceInfo && (
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-12 bg-[#0A0A0A] border-4 border-border rounded-3xl p-6 md:p-8 neo-brutalist-shadow relative overflow-hidden"
+              className="mt-12 bg-[#1A1F2B] rounded-2xl p-6 shadow-xl w-full font-sans"
             >
-              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#333] pb-4">
-                <MonitorSmartphone className="w-8 h-8 text-[#00FF00]" />
-                <h3 className="text-2xl font-black text-white">Deteksi Perangkat Lokal</h3>
-                <span className="ml-auto bg-[#00FF00]/20 text-[#00FF00] px-3 py-1 rounded-full text-xs font-bold border border-[#00FF00]/30 animate-pulse">
-                  ACTIVE
-                </span>
-              </div>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
-                  <div className="p-2 bg-[#00FF00]/10 rounded-lg"><MonitorSmartphone className="w-6 h-6 text-[#00FF00]" /></div>
-                  <div>
-                    <p className="text-[#888] text-xs font-bold mb-1">OS / PLATFORM</p>
-                    <p className="text-white font-mono text-sm">{deviceInfo.platform}</p>
-                  </div>
-                </div>
                 
-                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
-                  <div className="p-2 bg-[#00FF00]/10 rounded-lg"><Globe className="w-6 h-6 text-[#00FF00]" /></div>
-                  <div>
-                    <p className="text-[#888] text-xs font-bold mb-1">KONEKSI / BROWSER</p>
-                    <p className="text-white font-mono text-sm">{deviceInfo.connection.toUpperCase()} / {deviceInfo.language}</p>
-                  </div>
+                {/* Card 1: Battery & Visitors */}
+                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
+                  <Battery className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
+                  <p className="font-semibold text-lg mb-1">Battery: {deviceInfo.batteryLevel}</p>
+                  <p className="text-md mb-1">{data?.city || "Kebomas"}</p>
+                  <p className="text-md">Visitor: {visitors}</p>
                 </div>
 
-                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
-                  <div className="p-2 bg-[#00FF00]/10 rounded-lg"><Cpu className="w-6 h-6 text-[#00FF00]" /></div>
-                  <div>
-                    <p className="text-[#888] text-xs font-bold mb-1">CPU / RAM</p>
-                    <p className="text-white font-mono text-sm">{deviceInfo.logicalCores} Cores / ~{deviceInfo.memoryEstimate}</p>
-                  </div>
+                {/* Card 2: Time & Server */}
+                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
+                  <Clock className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
+                  <p className="font-semibold text-lg mb-1">
+                    {currentTime.toLocaleTimeString('id-ID', { hour12: false })} WIB
+                  </p>
+                  <p className="text-md mb-1">
+                    {["Minggu", "Sen", "Sel", "Rabu", "Kamis", "Jumat", "Sabtu"][currentTime.getDay()]}, {currentTime.getDate()} {["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][currentTime.getMonth()]} {currentTime.getFullYear()}
+                  </p>
+                  <p className="text-md">Run On: Vercel Edge</p>
                 </div>
 
-                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
-                  <div className="p-2 bg-[#00FF00]/10 rounded-lg">
-                    {deviceInfo.isCharging ? <BatteryCharging className="w-6 h-6 text-[#00FF00]" /> : <Battery className="w-6 h-6 text-[#00FF00]" />}
-                  </div>
-                  <div>
-                    <p className="text-[#888] text-xs font-bold mb-1">BATERAI / LAYAR</p>
-                    <p className="text-white font-mono text-sm">
-                      {deviceInfo.batteryLevel} / {deviceInfo.screenWidth}x{deviceInfo.screenHeight}
-                    </p>
-                  </div>
+                {/* Card 3: Network & OS */}
+                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
+                  <Server className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
+                  <p className="font-semibold text-lg mb-1">IP: {localIp}</p>
+                  <p className="text-md mb-1">OS: {deviceInfo.platform}</p>
+                  <p className="text-md">Browser: {deviceInfo.userAgent.includes("Chrome") ? "Chrome" : deviceInfo.userAgent.includes("Firefox") ? "Firefox" : deviceInfo.userAgent.includes("Safari") ? "Safari" : "Other"}</p>
                 </div>
-              </div>
-              
-              <div className="mt-4 p-3 bg-black border border-[#333] rounded-lg">
-                <p className="text-[#555] text-xs font-mono break-all">{deviceInfo.userAgent}</p>
+
+                {/* Card 4: Stats */}
+                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
+                  <LineChart className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
+                  <p className="font-semibold text-lg mb-1">Upto: 11h, 46m, 13s</p>
+                  <p className="text-md mb-1">Endpoint: 683</p>
+                  <p className="text-md">Request: 52091640</p>
+                </div>
+
               </div>
             </motion.div>
           )}

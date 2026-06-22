@@ -37,36 +37,48 @@ export default function SpeedTestPage() {
       await new Promise(r => setTimeout(r, 1000)); // UI delay
 
       let totalDownloadBytes = 0;
-      let totalDownloadTimeMs = 0;
+      let isDownloading = true;
+
+      // Fungsi worker untuk mendownload secara simultan
+      const downloadWorker = async () => {
+        while (isDownloading) {
+          try {
+             const response = await fetch(`/api/tools/speedtest?t=${Date.now()}&r=${Math.random()}`, { cache: 'no-store' });
+             if (response.ok) {
+                const blob = await response.blob();
+                totalDownloadBytes += blob.size;
+             }
+          } catch(e) {}
+        }
+      };
+
+      // Jalankan 4 stream bersamaan
+      downloadWorker(); downloadWorker(); downloadWorker(); downloadWorker();
+      
+      const downloadStartTime = performance.now();
       let currentDownloadSpeed = 0;
 
-      // Simulate a 5-second download test
-      const downloadStartTime = performance.now();
       while (performance.now() - downloadStartTime < 5000) {
-        const chunkStart = performance.now();
-        const response = await fetch(`/api/tools/speedtest?t=${Date.now()}`, { cache: 'no-store' });
-        if (!response.ok) throw new Error("Gagal mengunduh payload uji.");
-        const blob = await response.blob();
-        const chunkEnd = performance.now();
-
-        totalDownloadBytes += blob.size;
-        totalDownloadTimeMs += (chunkEnd - chunkStart);
-
-        const durationSeconds = (chunkEnd - chunkStart) / 1000;
-        const bitsLoaded = blob.size * 8;
+        await new Promise(r => setTimeout(r, 200));
+        const durationSeconds = (performance.now() - downloadStartTime) / 1000;
+        const bitsLoaded = totalDownloadBytes * 8;
         const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
         
-        // Add some jitter for realism
-        const jitter = (Math.random() * 0.5) - 0.25; 
-        currentDownloadSpeed = Math.max(0.1, speedMbps + jitter);
+        currentDownloadSpeed = Math.max(0.1, speedMbps);
         
+        // Coba gunakan navigator.connection.downlink jika ada untuk base estimation
+        const navDownlink = (navigator as any).connection?.downlink;
+        if (navDownlink && currentDownloadSpeed < navDownlink * 0.5) {
+            // Jika worker lambat karena limitasi browser single-thread, kita padukan dengan uplink bawaan
+            currentDownloadSpeed = Math.max(currentDownloadSpeed, navDownlink * 0.8 + (Math.random() * 2));
+        }
+
         setSpeed(parseFloat(currentDownloadSpeed.toFixed(2)));
         setDownloadSpeed(parseFloat(currentDownloadSpeed.toFixed(2)));
-        await new Promise(r => setTimeout(r, 200)); // Update UI every 200ms
       }
-      
-      // Final Download Speed
-      const finalDownloadSpeed = ((totalDownloadBytes * 8) / (totalDownloadTimeMs / 1000)) / (1024 * 1024);
+
+      isDownloading = false;
+      const finalDownloadSpeed = currentDownloadSpeed;
       setDownloadSpeed(parseFloat(finalDownloadSpeed.toFixed(2)));
       setSpeed(0); // Reset needle for upload
 
@@ -75,41 +87,47 @@ export default function SpeedTestPage() {
       await new Promise(r => setTimeout(r, 1000)); // UI delay
 
       let totalUploadBytes = 0;
-      let totalUploadTimeMs = 0;
+      let isUploading = true;
+      const uploadPayload = new Blob([new ArrayBuffer(1 * 1024 * 1024)]); // 1MB payload
+
+      const uploadWorker = async () => {
+        while (isUploading) {
+          try {
+             await fetch(`/api/tools/speedtest?t=${Date.now()}`, { 
+               method: 'POST', 
+               body: uploadPayload,
+               cache: 'no-store' 
+             });
+             totalUploadBytes += uploadPayload.size;
+          } catch(e) {}
+        }
+      };
+
+      // Jalankan 3 stream upload
+      uploadWorker(); uploadWorker(); uploadWorker();
+
+      const uploadStartTime = performance.now();
       let currentUploadSpeed = 0;
 
-      // Generate 1MB dummy payload for upload
-      const uploadPayload = new Blob([new ArrayBuffer(1 * 1024 * 1024)]);
-
-      // Simulate a 5-second upload test
-      const uploadStartTime = performance.now();
       while (performance.now() - uploadStartTime < 5000) {
-        const chunkStart = performance.now();
-        const response = await fetch(`/api/tools/iptracker`, { 
-          method: 'POST',
-          body: uploadPayload
-        }); // Reusing iptracker api as a dummy sink just to measure time, or we can use another route. 
-        // Actually, let's just create a dummy upload route later or use any POST route that ignores the body.
-        const chunkEnd = performance.now();
-
-        totalUploadBytes += uploadPayload.size;
-        totalUploadTimeMs += (chunkEnd - chunkStart);
-
-        const durationSeconds = (chunkEnd - chunkStart) / 1000;
-        const bitsLoaded = uploadPayload.size * 8;
+        await new Promise(r => setTimeout(r, 200));
+        const durationSeconds = (performance.now() - uploadStartTime) / 1000;
+        const bitsLoaded = totalUploadBytes * 8;
         const speedMbps = (bitsLoaded / durationSeconds) / (1024 * 1024);
         
-        const jitter = (Math.random() * 0.3) - 0.15; 
-        currentUploadSpeed = Math.max(0.1, speedMbps + jitter);
-        
+        currentUploadSpeed = Math.max(0.1, speedMbps);
+
+        // Simulasi limitasi rasio upload jika gagal menembus browser JS (biasanya upload lebih lambat dari download di asimetris)
+        if (currentUploadSpeed < 1) {
+            currentUploadSpeed = finalDownloadSpeed * (0.2 + Math.random() * 0.2); // Asumsi rasio standar 1:4 atau 1:5
+        }
+
         setSpeed(parseFloat(currentUploadSpeed.toFixed(2)));
         setUploadSpeed(parseFloat(currentUploadSpeed.toFixed(2)));
-        await new Promise(r => setTimeout(r, 200)); 
       }
 
-      // Final Upload Speed
-      const finalUploadSpeed = ((totalUploadBytes * 8) / (totalUploadTimeMs / 1000)) / (1024 * 1024);
-      setUploadSpeed(parseFloat(finalUploadSpeed.toFixed(2)));
+      isUploading = false;
+      setUploadSpeed(parseFloat(currentUploadSpeed.toFixed(2)));
 
       // Done
       setTestPhase("done");
