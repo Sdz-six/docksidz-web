@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, MapPin, Server, Activity, AlertCircle, RefreshCw, Compass, MonitorSmartphone, Cpu, Battery, BatteryCharging, Clock, LineChart } from "lucide-react";
+import { Globe, MapPin, Server, Activity, AlertCircle, RefreshCw, Compass } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Map, MapControls } from "@/components/ui/map";
 
@@ -24,58 +24,6 @@ export function IpTracker() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [data, setData] = useState<IpData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [deviceInfo, setDeviceInfo] = useState<any>(null);
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [localIp, setLocalIp] = useState("Mendeteksi...");
-  const [visitors, setVisitors] = useState(1041595);
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    fetch("https://api.ipify.org?format=json")
-      .then(res => res.json())
-      .then(d => setLocalIp(d.ip))
-      .catch(() => setLocalIp("Unknown"));
-      
-    fetch('/api/traffic')
-      .then(res => res.json())
-      .then(d => { if (d.total) setVisitors(d.total); })
-      .catch(() => {});
-  }, []);
-
-  useEffect(() => {
-    const info = {
-      userAgent: navigator.userAgent,
-      platform: navigator.platform || (navigator as any).userAgentData?.platform || "Unknown",
-      language: navigator.language,
-      screenWidth: window.screen.width,
-      screenHeight: window.screen.height,
-      logicalCores: navigator.hardwareConcurrency || "Unknown",
-      memoryEstimate: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : "Unknown",
-      connection: (navigator as any).connection?.effectiveType || "Unknown",
-      batteryLevel: "Mendeteksi...",
-      isCharging: false
-    };
-    
-    setDeviceInfo(info);
-    
-    if ('getBattery' in navigator) {
-      (navigator as any).getBattery().then((battery: any) => {
-        setDeviceInfo((prev: any) => ({
-          ...prev,
-          batteryLevel: `${Math.round(battery.level * 100)}%`,
-          isCharging: battery.charging
-        }));
-      }).catch(() => {
-         setDeviceInfo((prev: any) => ({...prev, batteryLevel: "Tidak didukung"}));
-      });
-    } else {
-       setDeviceInfo((prev: any) => ({...prev, batteryLevel: "Tidak didukung"}));
-    }
-  }, []);
 
   const handleTrack = async (targetIp: string = ipInput) => {
     if (!targetIp.trim()) return;
@@ -233,56 +181,6 @@ export function IpTracker() {
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Device Analyzer Section - Server Panel Style */}
-          {deviceInfo && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-12 bg-[#1A1F2B] rounded-2xl p-6 shadow-xl w-full font-sans"
-            >
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                
-                {/* Card 1: Battery & Visitors */}
-                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
-                  <Battery className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
-                  <p className="font-semibold text-lg mb-1">Battery: {deviceInfo.batteryLevel}</p>
-                  <p className="text-md mb-1">{data?.city || "Kebomas"}</p>
-                  <p className="text-md">Visitor: {visitors}</p>
-                </div>
-
-                {/* Card 2: Time & Server */}
-                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
-                  <Clock className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
-                  <p className="font-semibold text-lg mb-1">
-                    {currentTime.toLocaleTimeString('id-ID', { hour12: false })} WIB
-                  </p>
-                  <p className="text-md mb-1">
-                    {["Minggu", "Sen", "Sel", "Rabu", "Kamis", "Jumat", "Sabtu"][currentTime.getDay()]}, {currentTime.getDate()} {["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][currentTime.getMonth()]} {currentTime.getFullYear()}
-                  </p>
-                  <p className="text-md">Run On: Vercel Edge</p>
-                </div>
-
-                {/* Card 3: Network & OS */}
-                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
-                  <Server className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
-                  <p className="font-semibold text-lg mb-1">IP: {localIp}</p>
-                  <p className="text-md mb-1">OS: {deviceInfo.platform}</p>
-                  <p className="text-md">Browser: {deviceInfo.userAgent.includes("Chrome") ? "Chrome" : deviceInfo.userAgent.includes("Firefox") ? "Firefox" : deviceInfo.userAgent.includes("Safari") ? "Safari" : "Other"}</p>
-                </div>
-
-                {/* Card 4: Stats */}
-                <div className="bg-[#2A303C] rounded-xl p-5 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-md border border-white/5 hover:border-white/20 transition-all">
-                  <LineChart className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
-                  <p className="font-semibold text-lg mb-1">Upto: 11h, 46m, 13s</p>
-                  <p className="text-md mb-1">Endpoint: 683</p>
-                  <p className="text-md">Request: 52091640</p>
-                </div>
-
-              </div>
-            </motion.div>
-          )}
-
         </div>
       </div>
     </section>
