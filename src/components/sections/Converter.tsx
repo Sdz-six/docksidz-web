@@ -12,8 +12,12 @@ import { cn } from "@/lib/utils";
 type ConversionType = "word-to-pdf" | "pdf-to-word" | "image-to-pdf" | "merge-pdf" | "office-to-pdf";
 type Status = "idle" | "uploading" | "converting" | "success" | "error";
 
-export function Converter() {
-  const [activeTab, setActiveTab] = useState<ConversionType>("word-to-pdf");
+interface ConverterProps {
+  fixedTab?: ConversionType;
+}
+
+export function Converter({ fixedTab }: ConverterProps) {
+  const [activeTab, setActiveTab] = useState<ConversionType>(fixedTab || "word-to-pdf");
   const [files, setFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<Status>("idle");
   const [progress, setProgress] = useState(0);
@@ -205,26 +209,28 @@ export function Converter() {
         >
           
           {/* Tabs Container */}
-          <div className="flex bg-background rounded-xl overflow-x-auto mb-8 neo-brutalist-shadow-sm border-2 border-border snap-x">
-            {[
-              { id: "word-to-pdf", label: "Word ke PDF" },
-              { id: "pdf-to-word", label: "PDF ke Word" },
-              { id: "image-to-pdf", label: "JPG ke PDF" },
-              { id: "office-to-pdf", label: "PPT/Excel ke PDF" },
-              { id: "merge-pdf", label: "Gabung PDF" }
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => { setActiveTab(tab.id as ConversionType); handleReset(); }}
-                className={cn(
-                  "flex-shrink-0 flex-1 py-3 px-3 sm:py-4 sm:px-4 font-bold text-xs sm:text-sm md:text-base transition-all border-r-2 border-border snap-center whitespace-nowrap",
-                  activeTab === tab.id ? "bg-primary text-white" : "text-muted hover:text-white hover:bg-background/80"
-                )}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
+          {!fixedTab && (
+            <div className="flex bg-background rounded-xl overflow-x-auto mb-8 neo-brutalist-shadow-sm border-2 border-border snap-x">
+              {[
+                { id: "word-to-pdf", label: "Word ke PDF" },
+                { id: "pdf-to-word", label: "PDF ke Word" },
+                { id: "image-to-pdf", label: "JPG ke PDF" },
+                { id: "office-to-pdf", label: "PPT/Excel ke PDF" },
+                { id: "merge-pdf", label: "Gabung PDF" }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => { setActiveTab(tab.id as ConversionType); handleReset(); }}
+                  className={cn(
+                    "flex-shrink-0 flex-1 py-3 px-3 sm:py-4 sm:px-4 font-bold text-xs sm:text-sm md:text-base transition-all border-r-2 border-border snap-center whitespace-nowrap",
+                    activeTab === tab.id ? "bg-primary text-white" : "text-muted hover:text-white hover:bg-background/80"
+                  )}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
             {status === "idle" || status === "error" ? (

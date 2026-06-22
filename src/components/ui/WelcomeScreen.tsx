@@ -102,11 +102,11 @@ export function WelcomeScreen() {
             </motion.div>
             
             <h1 className="text-5xl md:text-7xl font-black mb-6 text-text tracking-tight">
-              Selamat Datang di <span className="text-surface bg-primary px-4 py-1 rounded-2xl inline-block mt-2 rotate-2 neo-brutalist-shadow-sm border-2 border-border">DockSidz</span>
+              Selamat Datang di <br className="md:hidden" /><span className="text-surface bg-primary px-4 py-1 rounded-2xl inline-block mt-2 rotate-2 neo-brutalist-shadow-sm border-2 border-border text-4xl md:text-6xl">DockSidz and Tools</span>
             </h1>
             
             <p className="text-xl md:text-2xl text-muted mb-10 font-medium">
-              Platform konversi Word & PDF instan favorit Anda. Didesain dengan gaya keren dan eksperimental dibuat dengan sepenuh hati 💖
+              Berhenti muter-muter nyari tools di luar sana. DockSidz and Tools adalah rumah buat segala utilitas digitalmu. Cepat, instan, dan dirancang dengan warna-warni berani yang siap ngebakar semangat produktivitasmu hari ini. 🎨✨
             </p>
             
             <motion.div

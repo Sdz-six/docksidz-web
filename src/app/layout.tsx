@@ -13,8 +13,8 @@ import { CustomCursor } from "@/components/ui/CustomCursor";
 import { GridBackground } from "@/components/ui/GridBackground";
 
 export const metadata: Metadata = {
-  title: "DockSidz - Convert Word & PDF Instantly",
-  description: "Fast, secure, and free file conversion directly in your browser. Neo-brutalist style.",
+  title: "DockSidz and Tools - Anti Ribet Club",
+  description: "Koleksi utilitas super lengkap buat ngebantu harimu. Konversi PDF, unduh video, AI, sampai cari resep masakan ada di sini! Didesain pake Neo-Brutalism.",
 };
 
 export default function RootLayout({

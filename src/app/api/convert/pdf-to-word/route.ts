@@ -32,7 +32,6 @@ export async function POST(req: NextRequest) {
           operation: "convert",
           input: "import-my-file",
           output_format: "docx",
-          engine: "office", // Akurasi tertinggi PDF ke Word
         },
         "export-my-file": {
           operation: "export/url",

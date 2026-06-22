@@ -55,7 +55,7 @@
     --color-muted: #A7F3D0;
     --color-border: #065F46;
   }
-  
+
   [data-theme='bubblegum'] {
     --color-background: #FDF2F8;
     --color-surface: #FCE7F3;
@@ -231,6 +231,12 @@
     --color-muted: #78350F;
     --color-border: #78350F;
   }
+  .maplibregl-popup-content {
+    @apply bg-transparent! shadow-none! p-0! rounded-none!;
+  }
+  .maplibregl-popup-tip {
+    @apply hidden!;
+  }
 }
 
 /* Base styles for dark mode */
@@ -238,7 +244,7 @@
   *, *::before, *::after {
     cursor: none !important;
   }
-  
+
   body {
     background-color: var(--color-background);
     color: var(--color-text);
@@ -251,12 +257,12 @@
   .neo-brutalist-border {
     border: 2px solid var(--color-border);
   }
-  
+
   .neo-brutalist-shadow {
     box-shadow: var(--shadow-neo);
     transition: all 0.2s ease-in-out;
   }
-  
+
   .neo-brutalist-shadow:hover {
     box-shadow: var(--shadow-neo-hover);
     transform: translate(-2px, -2px);
@@ -266,7 +272,7 @@
     box-shadow: 4px 4px 0px #000000;
     transition: all 0.2s ease-in-out;
   }
-  
+
   .neo-brutalist-shadow-sm:hover {
     box-shadow: 6px 6px 0px #000000;
     transform: translate(-1px, -1px);

@@ -48,7 +48,7 @@ export function History() {
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
               <Clock className="w-6 h-6 text-primary" />
-              Riwayat Konversi
+              Riwayat Aktivitas Alat
             </h2>
             <Button variant="ghost" size="sm" onClick={clearHistory} className="text-muted hover:text-error">
               <Trash2 className="w-4 h-4 mr-2" />
@@ -56,24 +56,24 @@ export function History() {
             </Button>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-2 sm:space-y-4">
             {history.sort((a, b) => b.timestamp - a.timestamp).map((item) => (
-              <div key={item.id} className="flex flex-col sm:flex-row sm:items-center justify-between bg-background p-3 sm:p-4 rounded-xl border-2 border-border gap-3 sm:gap-4">
-                <div className="flex items-center gap-3 sm:gap-4 overflow-hidden">
-                  <div className="bg-surface p-2 sm:p-3 rounded-lg border-2 border-border flex-shrink-0">
-                    <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              <div key={item.id} className="flex flex-row items-center justify-between bg-background p-2 sm:p-4 rounded-lg sm:rounded-xl border-2 border-border gap-2 sm:gap-4">
+                <div className="flex items-center gap-2 sm:gap-4 overflow-hidden w-full">
+                  <div className="bg-surface p-1.5 sm:p-3 rounded-md sm:rounded-lg border-2 border-border flex-shrink-0">
+                    <FileText className="w-4 h-4 sm:w-6 sm:h-6 text-primary" />
                   </div>
-                  <div className="overflow-hidden min-w-0">
-                    <h4 className="font-bold text-sm sm:text-base truncate" title={item.name}>{item.name}</h4>
-                    <p className="text-[10px] sm:text-xs text-muted truncate">
-                      {new Date(item.timestamp).toLocaleString("id-ID")} • {item.type}
+                  <div className="overflow-hidden min-w-0 flex-grow">
+                    <h4 className="font-bold text-xs sm:text-base truncate leading-tight" title={item.name}>{item.name}</h4>
+                    <p className="text-[9px] sm:text-xs text-muted truncate mt-0.5">
+                      {new Date(item.timestamp).toLocaleDateString("id-ID")} • {item.type}
                     </p>
                   </div>
                 </div>
                 <a href={item.url} download={item.name} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 cursor-pointer">
-                  <Button variant="primary" size="sm" className="w-full sm:w-auto">
-                    <Download className="w-4 h-4 mr-2" />
-                    Unduh
+                  <Button variant="primary" className="w-8 h-8 sm:h-auto sm:w-auto sm:px-4 p-0 flex items-center justify-center rounded-md sm:rounded-lg">
+                    <Download className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline text-sm font-bold">Unduh</span>
                   </Button>
                 </a>
               </div>

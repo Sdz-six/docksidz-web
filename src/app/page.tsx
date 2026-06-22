@@ -1,6 +1,6 @@
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
-import { Converter } from "@/components/sections/Converter";
+import { ToolsDashboard } from "@/components/sections/ToolsDashboard";
 import { History } from "@/components/sections/History";
 import { WebTraffic } from "@/components/sections/WebTraffic";
 
@@ -9,7 +9,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow pt-24 pb-16">
-        <Converter />
+        <ToolsDashboard />
         <History />
         <WebTraffic />
       </main>

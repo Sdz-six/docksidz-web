@@ -9,35 +9,38 @@ export function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   
-  // Spring config yang sangat responsif agar panah menempel kursor dengan presisi
-  const springConfig = { damping: 30, stiffness: 800, mass: 0.2 };
-  
-  const smoothX = useSpring(cursorX, springConfig);
-  const smoothY = useSpring(cursorY, springConfig);
-
   useEffect(() => {
+    // 1. Gerakan kursor instan tanpa spring (delay) agar terasa enteng
     const updateMousePosition = (e: MouseEvent) => {
-      // Offset agar ujung panah pas di titik kursor
       cursorX.set(e.clientX - 2);
       cursorY.set(e.clientY - 2);
-      
-      const target = e.target as HTMLElement;
-      const isClickable = target.closest('a, button, input, select, textarea, [role="button"], label, .cursor-pointer') !== null;
-      setIsHovering(isClickable);
     };
 
-    window.addEventListener("mousemove", updateMousePosition);
+    // 2. Deteksi hover dipindah ke mouseover agar tidak membebani setiap piksel pergerakan mouse
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target?.closest) {
+        const isClickable = target.closest('a, button, input, select, textarea, [role="button"], label, .cursor-pointer') !== null;
+        setIsHovering(prev => prev !== isClickable ? isClickable : prev);
+      }
+    };
+
+    // Gunakan { passive: true } agar scroll dan gerakan mouse tidak tertahan oleh Javascript
+    window.addEventListener("mousemove", updateMousePosition, { passive: true });
+    window.addEventListener("mouseover", handleMouseOver, { passive: true });
+    
     return () => {
       window.removeEventListener("mousemove", updateMousePosition);
+      window.removeEventListener("mouseover", handleMouseOver);
     };
   }, [cursorX, cursorY]);
 
   return (
     <motion.div
-      className="pointer-events-none fixed top-0 left-0 z-[10000]"
+      className="hidden md:block pointer-events-none fixed top-0 left-0 z-[10000]"
       style={{
-        x: smoothX,
-        y: smoothY,
+        x: cursorX,
+        y: cursorY,
       }}
     >
       <motion.div
@@ -45,7 +48,7 @@ export function CustomCursor() {
           scale: isHovering ? 1.3 : 1,
           rotate: isHovering ? -10 : 0,
         }}
-        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
         <svg 
           width="32" 
