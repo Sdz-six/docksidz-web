@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Play, RotateCcw, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 
 const COLORS = [
   "#FF5733", "#33FF57", "#3357FF", "#F033FF", "#33FFF0",
