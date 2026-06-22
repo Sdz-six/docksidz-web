@@ -98,7 +98,7 @@ export function WebTraffic() {
           <p className="text-xl text-muted max-w-2xl font-bold">Laporan lalu lintas pengunjung dan sistem deteksi jaringan.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto w-full font-sans">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full font-sans">
           {/* Card 1: Battery & Visitors */}
           <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C] rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
             <Battery className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
@@ -112,7 +112,7 @@ export function WebTraffic() {
             <Clock className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
             <p className="font-bold text-lg mb-1">{currentTime.toLocaleTimeString('id-ID', { hour12: false })} WIB</p>
             <p className="text-sm text-[#9CA3AF] mb-1">{["Minggu", "Sen", "Sel", "Rabu", "Kamis", "Jumat", "Sabtu"][currentTime.getDay()]}, {currentTime.getDate()} {["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][currentTime.getMonth()]} {currentTime.getFullYear()}</p>
-            <p className="text-sm text-[#9CA3AF]">Run On: Pterodactyl</p>
+            <p className="text-sm text-[#9CA3AF]">Run On: DockSidz Edge</p>
           </motion.div>
 
           {/* Card 3: Network & OS */}
@@ -121,14 +121,6 @@ export function WebTraffic() {
             <p className="font-bold text-lg mb-1">IP: {visitorData ? visitorData.ip : "Mendeteksi..."}</p>
             <p className="text-sm text-[#9CA3AF] mb-1">OS: {osName}</p>
             <p className="text-sm text-[#9CA3AF]">Browser: {browserName}</p>
-          </motion.div>
-
-          {/* Card 4: Stats */}
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C] rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
-            <LineChart className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
-            <p className="font-bold text-lg mb-1">Upto: 11h, 46m, 13s</p>
-            <p className="text-sm text-[#9CA3AF] mb-1">Endpoint: 683</p>
-            <p className="text-sm text-[#9CA3AF]">Request: 52091640</p>
           </motion.div>
         </div>
       </div>
