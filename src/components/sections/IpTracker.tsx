@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Globe, MapPin, Server, Activity, AlertCircle, RefreshCw, Compass } from "lucide-react";
+import { Globe, MapPin, Server, Activity, AlertCircle, RefreshCw, Compass, MonitorSmartphone, Cpu, Battery, BatteryCharging } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Map, MapControls } from "@/components/ui/map";
 
@@ -24,6 +24,38 @@ export function IpTracker() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [data, setData] = useState<IpData | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [deviceInfo, setDeviceInfo] = useState<any>(null);
+
+  useEffect(() => {
+    const info = {
+      userAgent: navigator.userAgent,
+      platform: navigator.platform || (navigator as any).userAgentData?.platform || "Unknown",
+      language: navigator.language,
+      screenWidth: window.screen.width,
+      screenHeight: window.screen.height,
+      logicalCores: navigator.hardwareConcurrency || "Unknown",
+      memoryEstimate: (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : "Unknown",
+      connection: (navigator as any).connection?.effectiveType || "Unknown",
+      batteryLevel: "Mendeteksi...",
+      isCharging: false
+    };
+    
+    setDeviceInfo(info);
+    
+    if ('getBattery' in navigator) {
+      (navigator as any).getBattery().then((battery: any) => {
+        setDeviceInfo((prev: any) => ({
+          ...prev,
+          batteryLevel: `${Math.round(battery.level * 100)}%`,
+          isCharging: battery.charging
+        }));
+      }).catch(() => {
+         setDeviceInfo((prev: any) => ({...prev, batteryLevel: "Tidak didukung"}));
+      });
+    } else {
+       setDeviceInfo((prev: any) => ({...prev, batteryLevel: "Tidak didukung"}));
+    }
+  }, []);
 
   const handleTrack = async (targetIp: string = ipInput) => {
     if (!targetIp.trim()) return;
@@ -181,6 +213,66 @@ export function IpTracker() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* Device Analyzer Section */}
+          {deviceInfo && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-12 bg-[#0A0A0A] border-4 border-border rounded-3xl p-6 md:p-8 neo-brutalist-shadow relative overflow-hidden"
+            >
+              <div className="flex items-center gap-3 mb-6 border-b-2 border-[#333] pb-4">
+                <MonitorSmartphone className="w-8 h-8 text-[#00FF00]" />
+                <h3 className="text-2xl font-black text-white">Deteksi Perangkat Lokal</h3>
+                <span className="ml-auto bg-[#00FF00]/20 text-[#00FF00] px-3 py-1 rounded-full text-xs font-bold border border-[#00FF00]/30 animate-pulse">
+                  ACTIVE
+                </span>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
+                  <div className="p-2 bg-[#00FF00]/10 rounded-lg"><MonitorSmartphone className="w-6 h-6 text-[#00FF00]" /></div>
+                  <div>
+                    <p className="text-[#888] text-xs font-bold mb-1">OS / PLATFORM</p>
+                    <p className="text-white font-mono text-sm">{deviceInfo.platform}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
+                  <div className="p-2 bg-[#00FF00]/10 rounded-lg"><Globe className="w-6 h-6 text-[#00FF00]" /></div>
+                  <div>
+                    <p className="text-[#888] text-xs font-bold mb-1">KONEKSI / BROWSER</p>
+                    <p className="text-white font-mono text-sm">{deviceInfo.connection.toUpperCase()} / {deviceInfo.language}</p>
+                  </div>
+                </div>
+
+                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
+                  <div className="p-2 bg-[#00FF00]/10 rounded-lg"><Cpu className="w-6 h-6 text-[#00FF00]" /></div>
+                  <div>
+                    <p className="text-[#888] text-xs font-bold mb-1">CPU / RAM</p>
+                    <p className="text-white font-mono text-sm">{deviceInfo.logicalCores} Cores / ~{deviceInfo.memoryEstimate}</p>
+                  </div>
+                </div>
+
+                <div className="bg-black border-2 border-[#333] p-4 rounded-xl flex items-center gap-4 hover:border-[#00FF00]/50 transition-colors">
+                  <div className="p-2 bg-[#00FF00]/10 rounded-lg">
+                    {deviceInfo.isCharging ? <BatteryCharging className="w-6 h-6 text-[#00FF00]" /> : <Battery className="w-6 h-6 text-[#00FF00]" />}
+                  </div>
+                  <div>
+                    <p className="text-[#888] text-xs font-bold mb-1">BATERAI / LAYAR</p>
+                    <p className="text-white font-mono text-sm">
+                      {deviceInfo.batteryLevel} / {deviceInfo.screenWidth}x{deviceInfo.screenHeight}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4 p-3 bg-black border border-[#333] rounded-lg">
+                <p className="text-[#555] text-xs font-mono break-all">{deviceInfo.userAgent}</p>
+              </div>
+            </motion.div>
+          )}
+
         </div>
       </div>
     </section>

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FileText, FileImage, Files, Presentation, Layers, DownloadCloud, PlaySquare, Link2, QrCode, Globe, Sparkles, Music, MessageSquare, RefreshCw, Volume2, FileSearch, Utensils, BookOpen, Dices } from "lucide-react";
+import { FileText, FileImage, Files, Presentation, Layers, DownloadCloud, PlaySquare, Link2, QrCode, Globe, Sparkles, Music, MessageSquare, RefreshCw, Volume2, FileSearch, Utensils, BookOpen, Dices, Wifi } from "lucide-react";
 
 const documentTools = [
   {
@@ -125,6 +125,13 @@ const utilityTools = [
     description: "Roda keberuntungan untuk mengambil keputusan acak secara seru.",
     icon: Dices,
     color: "bg-[#EC4899]",
+  },
+  {
+    id: "speed-test",
+    title: "Internet Speed Test",
+    description: "Uji kecepatan unduh (download) koneksi internet Anda langsung di browser.",
+    icon: Wifi,
+    color: "bg-[#3B82F6]",
   }
 ];
 
