@@ -9,31 +9,33 @@ export async function POST(req: NextRequest) {
     }
 
     const cleanIp = ip.trim();
-    // Gunakan ipapi.co (Free tanpa key, 1000 req/hari)
-    const apiUrl = `https://ipapi.co/${cleanIp}/json/`;
+    // Gunakan ip-api.com (Sangat cepat dan reliable)
+    const apiUrl = `http://ip-api.com/json/${cleanIp}`;
     
-    const response = await fetch(apiUrl, {
-      headers: {
-        "User-Agent": "DockSidz-IP-Tracker"
-      }
-    });
+    const response = await fetch(apiUrl);
+    const text = await response.text();
     
-    const data = await response.json();
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch(e) {
+        throw new Error("Provider API menolak permintaan. Silakan coba lagi.");
+    }
 
-    if (data.error) {
-      throw new Error(data.reason || "Alamat IP tidak valid atau tidak ditemukan.");
+    if (data.status === "fail") {
+      throw new Error(data.message || "Alamat IP tidak valid atau tidak ditemukan.");
     }
 
     return NextResponse.json({
-      ip: data.ip,
-      network: data.network || "-",
+      ip: data.query || cleanIp,
+      network: data.as || "-",
       city: data.city || "-",
-      region: data.region || "-",
-      country: data.country_name || "-",
+      region: data.regionName || "-",
+      country: data.country || "-",
       org: data.org || "-",
-      isp: data.org || "-", // As fallback
-      lat: data.latitude,
-      lon: data.longitude,
+      isp: data.isp || "-",
+      lat: data.lat || 0,
+      lon: data.lon || 0,
       timezone: data.timezone || "-"
     });
 
