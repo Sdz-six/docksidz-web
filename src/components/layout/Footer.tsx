@@ -13,13 +13,13 @@ export function Footer() {
         </div>
         
         <div className="flex space-x-6 text-sm text-muted">
-          <a href="https://www.instagram.com/sidz.six?igsh=NHNkY21obGVveTFh" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2">
-            Kontak / Instagram
+          <a href="https://www.instagram.com/sidz.six?igsh=NHNkY21obGVveTFh" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2 font-bold text-primary hover:text-primary/80">
+            Ada error atau bug hubungi saya
           </a>
         </div>
 
         <p className="text-muted text-sm font-medium flex items-center justify-center md:justify-start gap-1">
-          &copy; {new Date().getFullYear()} DockSidz and Tools. Dibuat oleh SidzJago <span className="text-xl">😿</span>
+          &copy; {new Date().getFullYear()} DockSidz and Tools. Dibuat oleh SidzJago <span className="text-xl">😹</span>
         </p>
       </div>
     </footer>
