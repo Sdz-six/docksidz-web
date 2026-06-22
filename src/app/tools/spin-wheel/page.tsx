@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
-import { Play, RotateCcw, Trash2 } from "lucide-react";
+import { Play, RotateCcw, Trash2, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 const COLORS = [
@@ -91,6 +92,11 @@ export default function SpinWheelPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 max-w-5xl">
+      <Link href="/#tools" className="inline-flex items-center text-muted hover:text-primary mb-8 font-bold neo-brutalist-shadow-sm bg-surface px-4 py-2 rounded-xl border-2 border-border transition-all hover:translate-y-[-2px]">
+        <ArrowLeft className="w-5 h-5 mr-2" />
+        Kembali ke Dashboard
+      </Link>
+
       <div className="mb-8 text-center md:text-left">
         <h1 className="text-3xl md:text-5xl font-black mb-4">Spin the Wheel</h1>
         <p className="text-muted text-lg">Roda keberuntungan untuk mengambil keputusan acak. Masukkan pilihan Anda dan putar rodanya!</p>
