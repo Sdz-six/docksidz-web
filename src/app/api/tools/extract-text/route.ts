@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as mammoth from "mammoth";
-import pdf from "pdf-parse";
+// Menggunakan require untuk mencegah build error di Next.js Turbopack
+const pdf = require("pdf-parse");
 
 export async function POST(req: NextRequest) {
   try {
