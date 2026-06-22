@@ -136,7 +136,7 @@ export default function YoutubeTranscriptPage() {
               
               <Button 
                 onClick={handleCopy} 
-                variant={copied ? "default" : "outline"}
+                variant={copied ? "primary" : "outline"}
                 className={`flex items-center gap-2 transition-all ${copied ? 'bg-green-500 hover:bg-green-600 text-white border-green-700' : ''}`}
               >
                 {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
