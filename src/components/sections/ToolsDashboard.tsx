@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FileText, FileImage, Files, Presentation, Layers, DownloadCloud, PlaySquare, Link2, QrCode, Globe, Sparkles, Music, MessageSquare, RefreshCw, Volume2, FileSearch, Utensils, BookOpen, Dices, Wifi } from "lucide-react";
+import { FileText, FileImage, Files, Presentation, Layers, DownloadCloud, PlaySquare, Link2, QrCode, Globe, Sparkles, Music, MessageSquare, RefreshCw, Volume2, FileSearch, Utensils, BookOpen, Dices, Wifi, Brain } from "lucide-react";
 
 const documentTools = [
   {
@@ -132,6 +132,20 @@ const utilityTools = [
     description: "Uji kecepatan unduh (download) koneksi internet Anda langsung di browser.",
     icon: Wifi,
     color: "bg-[#3B82F6]",
+  },
+  {
+    id: "focus-room",
+    title: "Ruang Fokus & Pomodoro",
+    description: "Timer belajar pintar dengan pemutar musik kustom untuk menemani Anda fokus.",
+    icon: Brain,
+    color: "bg-[#8B5CF6]",
+  },
+  {
+    id: "text-summarizer",
+    title: "Mesin Peringkas Jurnal",
+    description: "Ekstrak intisari artikel atau jurnal panjang secara otomatis dan instan.",
+    icon: FileText,
+    color: "bg-[#10B981]",
   }
 ];
 
