@@ -13,18 +13,49 @@ export default function TextSummarizerPage() {
   const [summary, setSummary] = useState("");
   const [ratio, setRatio] = useState(30); // Persentase ringkasan
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isExtracting, setIsExtracting] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const text = event.target?.result as string;
-      setInputText(text);
-    };
-    reader.readAsText(file);
+    const extension = file.name.split('.').pop()?.toLowerCase();
+
+    if (extension === 'txt' || extension === 'md' || extension === 'csv') {
+      // Baca langsung di browser
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        setInputText(text);
+      };
+      reader.readAsText(file);
+    } else if (extension === 'pdf' || extension === 'docx') {
+      // Kirim ke server backend untuk diekstrak
+      setIsExtracting(true);
+      setInputText("Menyedot dan membongkar dokumen " + file.name + "... Mohon tunggu sebentar.");
+      
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const res = await fetch("/api/tools/extract-text", {
+          method: "POST",
+          body: formData,
+        });
+        
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        
+        setInputText(data.text);
+      } catch (err: any) {
+        setInputText("Gagal mengekstrak dokumen: " + err.message);
+      } finally {
+        setIsExtracting(false);
+      }
+    } else {
+      alert("Format file tidak didukung!");
+    }
   };
 
   // Algoritma Extractive Summarization Bawaan (Berjalan 100% Offline di Browser)
@@ -141,17 +172,18 @@ export default function TextSummarizerPage() {
               <div>
                 <input 
                   type="file" 
-                  accept=".txt,.md,.csv,.json" 
+                  accept=".txt,.md,.pdf,.docx" 
                   id="file-upload" 
                   className="hidden" 
                   onChange={handleFileUpload} 
+                  disabled={isExtracting}
                 />
                 <label 
                   htmlFor="file-upload" 
-                  className="cursor-pointer bg-background hover:bg-border border-2 border-border px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors text-muted hover:text-foreground"
+                  className={`cursor-pointer bg-background hover:bg-border border-2 border-border px-3 py-1.5 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors ${isExtracting ? 'opacity-50 cursor-not-allowed text-primary' : 'text-muted hover:text-foreground'}`}
                 >
-                  <UploadCloud className="w-4 h-4" />
-                  Unggah Dokumen (.txt)
+                  <UploadCloud className={`w-4 h-4 ${isExtracting ? 'animate-bounce' : ''}`} />
+                  {isExtracting ? 'Menyedot...' : 'Unggah (.pdf/.docx)'}
                 </label>
               </div>
             </div>
