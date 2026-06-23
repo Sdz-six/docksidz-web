@@ -183,7 +183,12 @@ export function ToolsDashboard() {
   return (
     <section id="tools" className="py-10 md:py-20 relative z-10">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
+        <div className="text-center mb-12 relative">
+          <Link href="/void" className="inline-block mb-8 px-8 py-3 bg-[#ff003c] hover:bg-[#cc0030] text-white font-black tracking-widest border-4 border-border neo-brutalist-shadow hover:neo-brutalist-shadow-sm hover:translate-x-1 hover:translate-y-1 transition-all group">
+            <span className="flex items-center gap-2">
+              <span className="group-hover:animate-pulse">[ ENTER THE VOID ]</span>
+            </span>
+          </Link>
           <h2 className="text-3xl md:text-5xl font-black mb-4">Pilih Alat Anda</h2>
           <p className="text-muted text-lg">Semua yang Anda butuhkan untuk memanipulasi dokumen dan media ada di sini.</p>
         </div>
