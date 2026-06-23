@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Palette } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const THEMES = [
+export const THEMES = [
   { id: "default", name: "DockSidz Default", color: "#111844" },
   { id: "cyberpunk", name: "Cyberpunk", color: "#22C55E" },
   { id: "retro", name: "Retro Vibe", color: "#DC2626" },
@@ -41,6 +41,8 @@ export function ThemeSwitcher() {
     setCurrentTheme(themeId);
     localStorage.setItem("docksidz_theme", themeId);
     document.documentElement.setAttribute("data-theme", themeId);
+    document.documentElement.setAttribute("data-theme", themeId);
+    window.dispatchEvent(new CustomEvent("theme-changed", { detail: themeId }));
     setIsOpen(false);
     
     // Suara kecil saat ganti tema
