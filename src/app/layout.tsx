@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" data-theme="monochrome">
       <body
         className={`${spaceGrotesk.variable} antialiased bg-background text-text selection:bg-primary selection:text-white`}
       >

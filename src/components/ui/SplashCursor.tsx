@@ -91,27 +91,12 @@ export function SplashCursor() {
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      isMoving = true;
-      
-      // Spawn partikel saat mouse bergerak
-      for(let i = 0; i < 2; i++){
-        particles.push(new Particle(mouseX, mouseY));
-      }
-      
-      // Set timeout untuk berhenti nge-spawn jika mouse diam
-      clearTimeout((window as any).mouseStopTimeout);
-      (window as any).mouseStopTimeout = setTimeout(() => {
-        isMoving = false;
-      }, 50);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
       if(e.touches.length > 0) {
         mouseX = e.touches[0].clientX;
         mouseY = e.touches[0].clientY;
-        for(let i = 0; i < 2; i++){
-          particles.push(new Particle(mouseX, mouseY));
-        }
       }
     };
 

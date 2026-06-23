@@ -29,10 +29,10 @@ export const THEMES = [
 
 export function ThemeSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState("default");
+  const [currentTheme, setCurrentTheme] = useState("monochrome");
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("docksidz_theme") || "default";
+    const savedTheme = localStorage.getItem("docksidz_theme") || "monochrome";
     setCurrentTheme(savedTheme);
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);

@@ -24,7 +24,7 @@ export function ParticlesBackground() {
     };
 
     // Initial load
-    const savedTheme = localStorage.getItem("docksidz_theme") || "default";
+    const savedTheme = localStorage.getItem("docksidz_theme") || "monochrome";
     updateColor(savedTheme);
 
     // Listener for changes
