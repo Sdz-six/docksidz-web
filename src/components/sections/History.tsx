@@ -44,7 +44,7 @@ export function History() {
   return (
     <section className="pb-10 md:pb-20 relative z-10">
       <div className="container mx-auto px-4 flex justify-center">
-        <div className="w-full max-w-3xl bg-surface border-4 border-border rounded-2xl sm:rounded-[36px] p-4 sm:p-6 md:p-10 neo-brutalist-shadow-sm">
+        <div className="w-full max-w-3xl bg-surface/70 backdrop-blur-md border-4 border-border rounded-2xl sm:rounded-[36px] p-4 sm:p-6 md:p-10 neo-brutalist-shadow-sm">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <h2 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
               <Clock className="w-6 h-6 text-primary" />

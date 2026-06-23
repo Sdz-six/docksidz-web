@@ -4,7 +4,7 @@ import { ThemeSwitcher } from "@/components/ui/ThemeSwitcher";
 
 export function Navbar() {
   return (
-    <nav className="fixed top-0 w-full bg-background border-b-4 border-border z-50 neo-brutalist-shadow-sm">
+    <nav className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b-4 border-border z-50 neo-brutalist-shadow-sm">
       <div className="container mx-auto px-4 h-20 flex items-center justify-between relative">
         <div className="flex items-center z-10">
           <div className="bg-surface p-2 rounded-xl border-2 border-border neo-brutalist-shadow-sm">

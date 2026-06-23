@@ -18,63 +18,30 @@ export function ParticlesBackground() {
       className="fixed inset-0 w-full h-full -z-50 pointer-events-none"
       options={{
         background: {
-          color: {
-            value: "transparent",
-          },
+          color: { value: "transparent" },
         },
         fpsLimit: 60,
-        interactivity: {
-          events: {
-            onHover: {
-              enable: true,
-              mode: "grab",
-            },
-          },
-          modes: {
-            grab: {
-              distance: 140,
-              links: {
-                opacity: 0.5,
-              },
-            },
-          },
-        },
         particles: {
-          color: {
-            value: "#9CA3AF", // Warna abu-abu redup agar tidak menutupi konten
-          },
-          links: {
-            color: "#4B5563",
-            distance: 150,
-            enable: true,
-            opacity: 0.2,
-            width: 1,
-          },
+          color: { value: "#ffffff" },
+          links: { enable: false },
           move: {
-            direction: "none",
+            direction: "bottom",
             enable: true,
-            outModes: {
-              default: "bounce",
-            },
+            outModes: { default: "out" },
             random: false,
-            speed: 0.6,
-            straight: false,
+            speed: 25, // Kecepatan tinggi untuk efek hujan deras
+            straight: true,
           },
           number: {
-            density: {
-              enable: true,
-              area: 800,
-            },
-            value: 60, // Jumlah partikel
+            density: { enable: true, area: 800 },
+            value: 250, // Jumlah titik hujan yang sangat banyak
           },
           opacity: {
-            value: 0.3,
+            value: { min: 0.2, max: 0.6 },
           },
-          shape: {
-            type: "circle",
-          },
+          shape: { type: "circle" },
           size: {
-            value: { min: 1, max: 2 },
+            value: { min: 1, max: 3 }, // Memanjang ke bawah menggunakan stretch CSS atau kecepatan
           },
         },
         detectRetina: true,

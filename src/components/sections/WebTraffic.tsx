@@ -102,7 +102,7 @@ export function WebTraffic() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full font-sans">
           {/* Card 1: Battery & Visitors */}
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C] rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
+          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C]/70 backdrop-blur-md rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
             <Battery className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
             <p className="font-bold text-lg mb-1">Battery: {batteryLevel}</p>
             <p className="text-sm text-[#9CA3AF] mb-1">{visitorData ? visitorData.city : "Mendeteksi..."}</p>
@@ -110,7 +110,7 @@ export function WebTraffic() {
           </motion.div>
 
           {/* Card 2: Time & Server */}
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C] rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
+          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C]/70 backdrop-blur-md rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
             <Clock className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
             <p className="font-bold text-lg mb-1">{mounted ? `${currentTime.toLocaleTimeString('id-ID', { hour12: false })} WIB` : "Memuat Waktu..."}</p>
             <p className="text-sm text-[#9CA3AF] mb-1">{mounted ? `${["Minggu", "Sen", "Sel", "Rabu", "Kamis", "Jumat", "Sabtu"][currentTime.getDay()]}, ${currentTime.getDate()} ${["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][currentTime.getMonth()]} ${currentTime.getFullYear()}` : "..."}</p>
@@ -118,7 +118,7 @@ export function WebTraffic() {
           </motion.div>
 
           {/* Card 3: Network & OS */}
-          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C] rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
+          <motion.div whileHover={{ scale: 1.02 }} className="bg-[#2A303C]/70 backdrop-blur-md rounded-xl p-6 flex flex-col items-center justify-center text-center text-[#E2E8F0] shadow-lg border border-white/5 hover:border-white/10 transition-all min-h-[160px]">
             <Server className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
             <p className="font-bold text-lg mb-1">IP: {visitorData ? visitorData.ip : "Mendeteksi..."}</p>
             <p className="text-sm text-[#9CA3AF] mb-1">OS: {osName}</p>
