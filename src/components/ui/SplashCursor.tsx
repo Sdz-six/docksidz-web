@@ -1,139 +1,161 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useRef } from "react";
 
-interface Splash {
-  id: number;
+class Particle {
   x: number;
   y: number;
+  size: number;
   color: string;
-}
+  angle: number;
+  vx: number;
+  vy: number;
+  va: number; // velocity angle
+  life: number;
+  decay: number;
 
-const colors = [
-  "#7288AE", // Light Blue/Grey
-  "#4B5694", // Mid Blue
-  "#111844", // Dark Blue
-];
-
-// Singleton AudioContext agar tidak membuat konteks baru setiap saat
-let audioCtx: AudioContext | null = null;
-
-function playBubbleSound() {
-  try {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
+  constructor(x: number, y: number, isBurst = false) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 12 + 8; // Ukuran kotak 8 - 20
     
-    // Pastikan context berjalan (beberapa browser menghentikan context sebelum interaksi)
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
+    // Warna cerah ala Neo-Brutalism / Cyberpunk
+    const colors = ["#3B82F6", "#10B981", "#EF4444", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4"]; 
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+    this.angle = Math.random() * Math.PI * 2;
+    
+    // Jika burst (diklik), kotak melesat lebih cepat dan jauh
+    const speed = isBurst ? 8 : 2;
+    this.vx = (Math.random() - 0.5) * speed;
+    this.vy = (Math.random() - 0.5) * speed;
+    
+    this.va = (Math.random() - 0.5) * 0.2; // Kecepatan putaran
+    this.life = 1.0;
+    this.decay = Math.random() * 0.02 + 0.01; // Kecepatan menghilang
+  }
 
-    const osc = audioCtx.createOscillator();
-    const gainNode = audioCtx.createGain();
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.angle += this.va;
+    this.life -= this.decay;
+  }
 
-    osc.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
-
-    // Suara "plop" atau gelembung pecah (Pitch sweep naik dengan cepat)
-    const now = audioCtx.currentTime;
-    osc.type = "sine";
-    // Mulai dari 400Hz naik ke 1200Hz
-    osc.frequency.setValueAtTime(400, now);
-    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
-
-    // Envelope volume: gain dimaksimalkan agar terdengar jelas
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(1, now + 0.02);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
-
-    osc.start(now);
-    osc.stop(now + 0.15);
-  } catch (error) {
-    // Abaikan error audio jika browser tidak mendukung
-    console.error("Audio error:", error);
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    ctx.rotate(this.angle);
+    
+    ctx.globalAlpha = Math.max(0, this.life);
+    ctx.fillStyle = this.color;
+    
+    // Efek Outline agar kotak lebih tegas (Brutalist style)
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(0,0,0,0.5)";
+    
+    // Gambar kotak
+    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+    ctx.strokeRect(-this.size / 2, -this.size / 2, this.size, this.size);
+    
+    ctx.restore();
   }
 }
 
 export function SplashCursor() {
-  const [splashes, setSplashes] = useState<Splash[]>([]);
-
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
   useEffect(() => {
-    const handleClick = (e: MouseEvent) => {
-      // Mainkan efek suara gelembung
-      playBubbleSound();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
-      // Menambahkan efek splash pada posisi klik
-      const newSplash = {
-        id: Date.now(),
-        x: e.clientX,
-        y: e.clientY,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      };
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
 
-      setSplashes((prev) => [...prev, newSplash]);
+    let particles: Particle[] = [];
+    let animationFrameId: number;
+    let mouseX = 0;
+    let mouseY = 0;
+    let isMoving = false;
 
-      // Hapus splash setelah animasi selesai (1 detik)
-      setTimeout(() => {
-        setSplashes((prev) => prev.filter((s) => s.id !== newSplash.id));
-      }, 1000);
+    const handleResize = () => {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
     };
 
+    const handleMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      isMoving = true;
+      
+      // Spawn partikel saat mouse bergerak
+      for(let i = 0; i < 2; i++){
+        particles.push(new Particle(mouseX, mouseY));
+      }
+      
+      // Set timeout untuk berhenti nge-spawn jika mouse diam
+      clearTimeout((window as any).mouseStopTimeout);
+      (window as any).mouseStopTimeout = setTimeout(() => {
+        isMoving = false;
+      }, 50);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if(e.touches.length > 0) {
+        mouseX = e.touches[0].clientX;
+        mouseY = e.touches[0].clientY;
+        for(let i = 0; i < 2; i++){
+          particles.push(new Particle(mouseX, mouseY));
+        }
+      }
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      // Ledakan partikel saat diklik
+      for(let i = 0; i < 15; i++){
+        particles.push(new Particle(e.clientX, e.clientY, true));
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
     window.addEventListener("click", handleClick);
-    return () => window.removeEventListener("click", handleClick);
+
+    const animate = () => {
+      ctx.clearRect(0, 0, width, height);
+      
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].update();
+        particles[i].draw(ctx);
+      }
+      
+      // Hapus partikel yang sudah mati
+      particles = particles.filter(p => p.life > 0);
+      
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("click", handleClick);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[9999] overflow-hidden">
-      <AnimatePresence>
-        {splashes.map((splash) => (
-          <React.Fragment key={splash.id}>
-            {/* Partikel utama membesar dan memudar */}
-            <motion.div
-              initial={{ opacity: 1, scale: 0 }}
-              animate={{ opacity: 0, scale: 2 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="absolute rounded-full"
-              style={{
-                left: splash.x - 20,
-                top: splash.y - 20,
-                width: 40,
-                height: 40,
-                backgroundColor: splash.color,
-                opacity: 0.5,
-              }}
-            />
-            {/* Percikan kecil di sekeliling */}
-            {[...Array(6)].map((_, i) => {
-              const angle = (i * Math.PI * 2) / 6;
-              const distance = 40 + Math.random() * 30;
-              return (
-                <motion.div
-                  key={`${splash.id}-${i}`}
-                  initial={{ opacity: 1, x: 0, y: 0, scale: 1 }}
-                  animate={{
-                    opacity: 0,
-                    x: Math.cos(angle) * distance,
-                    y: Math.sin(angle) * distance,
-                    scale: 0,
-                  }}
-                  transition={{ duration: 0.5, ease: "easeOut" }}
-                  className="absolute rounded-full"
-                  style={{
-                    left: splash.x - 5,
-                    top: splash.y - 5,
-                    width: 10,
-                    height: 10,
-                    backgroundColor: splash.color,
-                  }}
-                />
-              );
-            })}
-          </React.Fragment>
-        ))}
-      </AnimatePresence>
-    </div>
+    <canvas
+      ref={canvasRef}
+      className="fixed inset-0 pointer-events-none z-[100]"
+    />
   );
 }
