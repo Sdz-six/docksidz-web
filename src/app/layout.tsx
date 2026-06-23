@@ -11,6 +11,8 @@ import { WelcomeScreen } from "@/components/ui/WelcomeScreen";
 import { SplashCursor } from "@/components/ui/SplashCursor";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { GridBackground } from "@/components/ui/GridBackground";
+import { ParticlesBackground } from "@/components/ui/ParticlesBackground";
+import { Mascot } from "@/components/ui/Mascot";
 
 export const metadata: Metadata = {
   title: "DockSidz and Tools - Anti Ribet Club",
@@ -28,9 +30,11 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} antialiased bg-background text-text selection:bg-primary selection:text-white`}
       >
         <GridBackground />
+        <ParticlesBackground />
         <WelcomeScreen />
         <SplashCursor />
         <CustomCursor />
+        <Mascot />
         {children}
       </body>
     </html>
