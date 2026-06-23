@@ -32,11 +32,11 @@ export function WebTraffic() {
       else if (ua.indexOf("Safari") > -1) browser = "Safari";
       
       let os = "Unknown";
-      if (navigator.platform.includes("Win")) os = "Desktop (Win)";
-      else if (navigator.platform.includes("Mac")) os = "Desktop (Mac)";
-      else if (navigator.platform.includes("Linux")) os = "Linux";
-      else if (/Android/.test(ua)) os = "Mobile (Android)";
+      if (/Android/.test(ua)) os = "Mobile (Android)";
       else if (/iPhone|iPad|iPod/.test(ua)) os = "Mobile (iOS)";
+      else if (navigator.platform.includes("Win")) os = "Desktop (Win)";
+      else if (navigator.platform.includes("Mac")) os = "Desktop (Mac)";
+      else if (navigator.platform.includes("Linux")) os = "Linux (Desktop)";
 
       setBrowserName(browser);
       setOsName(os);
@@ -114,7 +114,7 @@ export function WebTraffic() {
             <Clock className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
             <p className="font-bold text-lg mb-1">{mounted ? `${currentTime.toLocaleTimeString('id-ID', { hour12: false })} WIB` : "Memuat Waktu..."}</p>
             <p className="text-sm text-[#9CA3AF] mb-1">{mounted ? `${["Minggu", "Sen", "Sel", "Rabu", "Kamis", "Jumat", "Sabtu"][currentTime.getDay()]}, ${currentTime.getDate()} ${["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][currentTime.getMonth()]} ${currentTime.getFullYear()}` : "..."}</p>
-            <p className="text-sm text-[#9CA3AF]">Run On: DockSidz Edge</p>
+            <p className="text-sm text-[#9CA3AF]">Status: Online & Secure</p>
           </motion.div>
 
           {/* Card 3: Network & OS */}
