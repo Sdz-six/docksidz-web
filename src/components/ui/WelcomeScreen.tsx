@@ -22,6 +22,8 @@ export function WelcomeScreen() {
       const end = Date.now() + duration;
 
       const frame = () => {
+        if (!isVisible) return; // Langsung berhenti jika layar sudah ditutup
+        
         confetti({
           particleCount: 5,
           angle: 60,
@@ -38,18 +40,25 @@ export function WelcomeScreen() {
         });
 
         if (Date.now() < end) {
-          requestAnimationFrame(frame);
+          (window as any).confettiFrame = requestAnimationFrame(frame);
         }
       };
       
       // Delay sedikit agar rendering selesai dulu
       setTimeout(frame, 300);
     }
-  }, []);
+    
+    return () => {
+      if ((window as any).confettiFrame) cancelAnimationFrame((window as any).confettiFrame);
+      confetti.reset(); // Bersihkan sisa partikel dari memori
+    };
+  }, [isVisible]);
 
   const handleEnter = () => {
     sessionStorage.setItem("docksidz_welcomed", "true");
     setIsVisible(false);
+    if ((window as any).confettiFrame) cancelAnimationFrame((window as any).confettiFrame);
+    confetti.reset(); // Hentikan confetti SEKETIKA untuk mencegah lag HP
     
     // Suara letupan kecil
     try {
