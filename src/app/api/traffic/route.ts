@@ -8,9 +8,15 @@ const redisUrl = process.env.KV_URL || process.env.REDIS_URL || process.env.UPST
 
 async function getRedisClient() {
   try {
-    const client = redisUrl.startsWith("redis") 
-      ? createClient({ url: redisUrl }) 
-      : createClient();
+    const clientOptions = {
+      url: redisUrl || undefined,
+      socket: {
+        connectTimeout: 3000,
+        reconnectStrategy: false
+      }
+    };
+
+    const client = createClient(clientOptions);
       
     client.on('error', (err) => console.error('Redis Traffic Client Error', err));
     await client.connect();
