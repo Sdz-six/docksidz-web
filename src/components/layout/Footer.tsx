@@ -4,7 +4,7 @@ import { FileCode2 } from "lucide-react";
 export function Footer() {
   return (
     <footer className="border-t-2 border-border bg-surface py-12 mt-20">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row items-center md:items-center justify-center md:justify-start gap-6 md:gap-12 relative z-10">
+      <div className="container mx-auto px-4 flex flex-col md:flex-row items-start justify-start gap-6 md:gap-12 relative z-10 w-full sm:w-3/4">
         
         {/* Bagian Kiri: Logo */}
         <div className="flex items-center gap-3">
@@ -15,12 +15,13 @@ export function Footer() {
         </div>
         
         {/* Bagian Tengah: Teks & Link dikelompokkan ke kiri agar aman dari Maskot di kanan */}
-        <div className="flex flex-col items-center md:items-start gap-2 border-t-2 md:border-t-0 md:border-l-2 border-border/50 pt-4 md:pt-0 md:pl-8">
-          <a href="https://www.instagram.com/sidz.six?igsh=NHNkY21obGVveTFh" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2 font-bold text-primary hover:text-primary/80">
+        <div className="flex flex-col items-start gap-2 border-t-2 md:border-t-0 md:border-l-2 border-border/50 pt-4 md:pt-0 md:pl-8">
+          <a href="https://www.instagram.com/sidz.six?igsh=NHNkY21obGVveTFh" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-2 font-bold text-primary hover:text-primary/80 text-left">
             Ada error atau bug? Hubungi saya
           </a>
-          <p className="text-muted text-sm font-medium flex items-center gap-1">
-            &copy; {new Date().getFullYear()} DockSidz and Tools. Dibuat oleh SidzJago <span className="text-xl">😹</span>
+          <p className="text-muted text-sm font-medium flex items-start gap-1 text-left flex-col sm:flex-row">
+            <span>&copy; {new Date().getFullYear()} DockSidz and Tools.</span>
+            <span>Dibuat oleh SidzJago <span className="text-xl">😹</span></span>
           </p>
         </div>
 
