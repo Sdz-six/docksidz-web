@@ -78,6 +78,11 @@ export function FastRain() {
       }
     };
 
+    if (intensityParams.count === 0) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return; // Berhenti sepenuhnya jika dimatikan
+    }
+
     const resize = () => {
       // Set ukuran kanvas sesuai resolusi layar secara dinamis
       canvas.width = window.innerWidth;
