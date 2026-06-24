@@ -34,7 +34,7 @@ export function Footer() {
             <span>Dibuat oleh SidzJago <span className="text-xl">😹</span></span>
           </div>
         </div>
-
+      </div>
     </footer>
   );
 }
