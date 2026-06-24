@@ -16,11 +16,19 @@ const generateShadows = (count: number) => {
 
 export function FastRain() {
   const [rainColor, setRainColor] = useState("#ffffff");
+  const [isMounted, setIsMounted] = useState(false);
 
-  // Generate shadow strings hanya sekali saat komponen dipasang
-  const rainLayer1 = useMemo(() => generateShadows(150), []);
-  const rainLayer2 = useMemo(() => generateShadows(100), []);
-  const rainLayer3 = useMemo(() => generateShadows(50), []);
+  // Generate shadow strings hanya di client side untuk mencegah Hydration Mismatch
+  const [rainLayer1, setRainLayer1] = useState("");
+  const [rainLayer2, setRainLayer2] = useState("");
+  const [rainLayer3, setRainLayer3] = useState("");
+
+  useEffect(() => {
+    setRainLayer1(generateShadows(150));
+    setRainLayer2(generateShadows(100));
+    setRainLayer3(generateShadows(50));
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     const updateColor = (themeId: string) => {
@@ -52,18 +60,18 @@ export function FastRain() {
         }
         .rain-layer-1 {
           box-shadow: ${rainLayer1};
-          animation: rainAnim 0.8s linear infinite;
+          animation: rainAnim 1.2s linear infinite;
         }
         .rain-layer-2 {
           box-shadow: ${rainLayer2};
-          animation: rainAnim 1.2s linear infinite;
+          animation: rainAnim 1.8s linear infinite;
           opacity: 0.7;
           width: 1px;
           height: 10px;
         }
         .rain-layer-3 {
           box-shadow: ${rainLayer3};
-          animation: rainAnim 1.6s linear infinite;
+          animation: rainAnim 2.4s linear infinite;
           opacity: 0.4;
           width: 1px;
           height: 5px;
@@ -74,16 +82,14 @@ export function FastRain() {
         }
       `}} />
       
-      {/* 
-        Trik Performa:
-        Kita hanya me-render 3 buah <div>, namun CSS box-shadow akan menggambar
-        ratusan bayangan (yang terlihat seperti hujan) di sekitarnya.
-        Animasi menggunakan transform translateY yang 100% diproses oleh GPU (VRAM), 
-        bukan CPU, sehingga HP paling lambat sekalipun tidak akan lag!
-      */}
-      <div className="rain-drop rain-layer-1" />
-      <div className="rain-drop rain-layer-2" />
-      <div className="rain-drop rain-layer-3" />
+      {/* Hanya render layer hujan jika sudah di mount di client */}
+      {isMounted && (
+        <>
+          <div className="rain-drop rain-layer-1" />
+          <div className="rain-drop rain-layer-2" />
+          <div className="rain-drop rain-layer-3" />
+        </>
+      )}
     </div>
   );
 }
