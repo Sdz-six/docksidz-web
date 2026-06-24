@@ -5,10 +5,10 @@ import YouTube, { YouTubeProps } from "react-youtube";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Pause, SkipForward, Radio, Volume2, VolumeX, Music, Link as LinkIcon, Check } from "lucide-react";
 
-// Stasiun radio default menggunakan video yang terjamin bisa di-embed (Lofi Girl dkk)
+// Stasiun radio default menggunakan video yang terjamin bisa di-embed (Bukan Live Stream agar lebih stabil)
 const DEFAULT_STATIONS = [
-  { id: "jfKfPfyJRdk", name: "Hujan & Kenangan", genre: "Lo-Fi Hip Hop Live" }, // Lofi Girl
-  { id: "4xDzrIxZZNc", name: "Fokus Tingkat Dewa", genre: "Synthwave / Cyberpunk" }, // Boleh coba lagi, tapi kita punya custom
+  { id: "_tV5LEBDs7w", name: "Hujan & Kenangan", genre: "Lo-Fi Hip Hop Mix" }, // VOD Lofi
+  { id: "MVPTGwwCn4", name: "Fokus Tingkat Dewa", genre: "Synthwave / Cyberpunk" }, // VOD Synthwave
   { id: "7NOSDKb0HlU", name: "Warung Kopi Malam", genre: "Acoustic Cafe" }, 
   { id: "CUSTOM", name: "Stasiun Kustom", genre: "Pilihan Anda Sendiri" }
 ];
@@ -201,13 +201,10 @@ export function NeoRadio() {
               {/* Real-time Status Bar */}
               <div className="mt-4 h-2 w-full bg-border/20 rounded-full overflow-hidden">
                 <div 
-                  className={`h-full ${progress === 100 ? 'bg-green-400 animate-pulse' : 'bg-primary'} transition-all duration-1000 ease-linear`}
+                  className={`h-full ${progress >= 99 ? 'bg-green-400 animate-pulse' : 'bg-primary'} transition-all duration-1000 ease-linear`}
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <p className="text-[10px] font-bold text-center mt-1 text-muted opacity-70">
-                {progress === 100 ? 'LIVE STREAMING' : `${Math.floor(progress)}% COMPLETED`}
-              </p>
             </motion.div>
           )}
         </AnimatePresence>
