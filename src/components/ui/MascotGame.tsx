@@ -21,11 +21,11 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
   const gameState = useRef({
     birdY: 300,
     velocity: 0,
-    gravity: 0.5,
-    jumpStrength: -8,
+    gravity: 0.4, // Lebih lambat jatuhnya
+    jumpStrength: -7, // Loncatan lebih lembut
     pipes: [] as { x: number, y: number, passed: boolean }[],
     pipeWidth: 60,
-    pipeGap: 180,
+    pipeGap: 220, // Celah lebih lebar agar mudah
     score: 0,
     isGameOver: false,
     isStarted: false,
@@ -137,7 +137,7 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
 
         // Munculkan Pipa
         frameCount++;
-        if (frameCount % 100 === 0) {
+        if (frameCount % 120 === 0) { // Jarak antar pipa lebih jauh
           const minPipeY = 100;
           const maxPipeY = canvas.height - state.pipeGap - 100;
           const topPipeY = Math.random() * (maxPipeY - minPipeY) + minPipeY;
@@ -147,7 +147,7 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
         // Update Pipa & Deteksi Tabrakan
         for (let i = state.pipes.length - 1; i >= 0; i--) {
           const p = state.pipes[i];
-          p.x -= 4; // Kecepatan geser
+          p.x -= 3; // Kecepatan geser lebih lambat (sebelumnya 4)
 
           // Gambar Pipa Atas
           ctx.fillStyle = "#EF4444"; // Merah neo-brutalist
@@ -163,7 +163,7 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
 
           // Hitbox deteksi tabrakan
           const birdX = 100; // Posisi X burung selalu di 100
-          const birdSize = 40; // Ukuran hitbox
+          const birdSize = 30; // Ukuran hitbox diperkecil agar lebih memaafkan (sebelumnya 40)
           
           if (
             birdX + birdSize > p.x && 
