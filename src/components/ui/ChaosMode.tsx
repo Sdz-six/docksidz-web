@@ -2,27 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, RefreshCcw } from "lucide-react";
+import { AlertTriangle, RefreshCcw, Skull, Terminal } from "lucide-react";
 
 export function ChaosMode() {
   const [isChaos, setIsChaos] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-  useEffect(() => {
-    const handleChaos = () => {
-      // 1. Bunyikan Alarm (Opsional)
-      try {
-        const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
-        audio.volume = 0.5;
-        audio.play().catch(() => {});
-      } catch (e) {}
+  const confirmChaos = () => {
+    setShowConfirmModal(false);
+    
+    // Bunyikan Alarm
+    try {
+      const audio = new Audio("https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg");
+      audio.volume = 0.5;
+      audio.play().catch(() => {});
+    } catch (e) {}
 
-      setIsChaos(true);
-      document.body.classList.add("chaos-active");
-    };
-
-    window.addEventListener("trigger-chaos", handleChaos);
-    return () => window.removeEventListener("trigger-chaos", handleChaos);
-  }, []);
+    setIsChaos(true);
+    document.body.classList.add("chaos-active");
+  };
 
   const restoreOrder = () => {
     window.location.reload();
@@ -30,6 +28,70 @@ export function ChaosMode() {
 
   return (
     <>
+      {/* Tombol Terlarang (Chaos Mode) */}
+      <button 
+        onClick={() => setShowConfirmModal(true)}
+        className="fixed bottom-6 right-[35vw] md:right-72 z-[45] flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-red-600 border-4 border-black rounded-full shadow-[0_4px_0_#000] md:shadow-[0_8px_0_#000] hover:translate-y-1 md:hover:translate-y-2 hover:shadow-[0_2px_0_#000] md:hover:shadow-[0_4px_0_#000] active:translate-y-2 md:active:translate-y-4 active:shadow-none transition-all group"
+      >
+        <div className="absolute inset-1 md:inset-2 border-2 border-black/30 rounded-full flex items-center justify-center">
+          <Skull className="w-5 h-5 md:w-6 md:h-6 text-black group-hover:scale-110 transition-transform" />
+        </div>
+        <span className="absolute -top-10 md:-top-12 bg-black text-white text-[10px] md:text-xs font-black px-2 md:px-3 py-1 md:py-1.5 border-2 border-white/20 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          ⚠️ JANGAN DITEKAN!
+        </span>
+      </button>
+
+      {/* Modal Konfirmasi Ala Hacker / Error */}
+      <AnimatePresence>
+        {showConfirmModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              className="bg-[#0a0a0a] border-2 border-red-500 w-full max-w-xl rounded-lg overflow-hidden font-mono shadow-[0_0_50px_rgba(239,68,68,0.2)]"
+            >
+              <div className="bg-red-600 text-white p-2 flex items-center gap-2 text-sm font-bold">
+                <Terminal className="w-4 h-4" /> CRITICAL_SYSTEM_WARNING.exe
+              </div>
+              <div className="p-6 text-red-500 flex flex-col gap-4">
+                <p className="text-2xl font-black animate-pulse flex items-center gap-3">
+                  <AlertTriangle className="w-8 h-8" /> FATAL ERROR DETECTED
+                </p>
+                <div className="text-sm text-red-400 space-y-2 bg-red-950/30 p-4 border border-red-900/50 rounded">
+                  <p>{">"} WARNING: TINDAKAN INI AKAN MENGESAMPINGKAN PROTOKOL KEAMANAN CSS.</p>
+                  <p>{">"} WARNING: GRAVITASI DOM AKAN DIMATIKAN.</p>
+                  <p>{">"} WARNING: SEMUA KOMPONEN STRUKTURAL AKAN KOLAPS.</p>
+                </div>
+                <p className="font-bold mt-2">
+                  Apakah Anda benar-benar yakin ingin menghancurkan antarmuka ini?
+                </p>
+                
+                <div className="flex justify-end gap-4 mt-6">
+                  <button 
+                    onClick={() => setShowConfirmModal(false)}
+                    className="px-6 py-2 border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-colors font-bold"
+                  >
+                    [ ABORT ]
+                  </button>
+                  <button 
+                    onClick={confirmChaos}
+                    className="px-6 py-2 bg-red-600 text-white font-black hover:bg-red-700 animate-pulse transition-colors"
+                  >
+                    [ INITIATE_CHAOS ]
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Efek Chaos Active */}
       {isChaos && (
         <style dangerouslySetInnerHTML={{ __html: `
           /* Efek Gravitasi Runtuh pada Semua Elemen */
@@ -56,6 +118,7 @@ export function ChaosMode() {
         `}} />
       )}
       
+      {/* Layar Runtuh Modal */}
       <AnimatePresence>
         {isChaos && (
           <motion.div
