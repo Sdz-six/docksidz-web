@@ -234,24 +234,24 @@ export function WebTraffic() {
         {/* Papan Coretan Tamu (Spesial UI) */}
         <div className="mt-12 max-w-2xl mx-auto">
           <Link href="/tools/guestbook" className="block outline-none group relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-primary rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-500"></div>
             <motion.div 
               whileHover={{ scale: 1.02, y: -5 }}
               whileTap={{ scale: 0.98 }}
-              className="relative bg-surface border-4 border-pink-500 rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 neo-brutalist-shadow hover:shadow-[0_15px_0_#ec4899] transition-all duration-300"
+              className="relative bg-surface border-4 border-primary rounded-2xl p-6 md:p-8 flex flex-col sm:flex-row items-center gap-6 neo-brutalist-shadow hover:shadow-[0_15px_0_#000] transition-all duration-300"
             >
-              <div className="w-20 h-20 shrink-0 bg-pink-500 rounded-xl border-4 border-black flex items-center justify-center transform -rotate-6 group-hover:rotate-0 transition-transform duration-300 shadow-[4px_4px_0_#000]">
+              <div className="w-20 h-20 shrink-0 bg-primary rounded-xl border-4 border-black flex items-center justify-center transform -rotate-6 group-hover:rotate-0 transition-transform duration-300 shadow-[4px_4px_0_#000]">
                 <StickyNote className="w-10 h-10 text-white" />
               </div>
               <div className="text-center sm:text-left flex-grow">
-                <h3 className="text-2xl md:text-3xl font-black mb-2 text-text group-hover:text-pink-600 transition-colors">
+                <h3 className="text-2xl md:text-3xl font-black mb-2 text-text group-hover:text-primary transition-colors">
                   Papan Coretan Tamu
                 </h3>
                 <p className="text-muted font-bold text-sm md:text-base">
                   Area khusus pengunjung! Tinggalkan jejak, keluh kesah, atau pesan rahasia di papan interaktif ini. Posisi kertas tersimpan selamanya di browser Anda.
                 </p>
               </div>
-              <div className="shrink-0 bg-black text-white px-6 py-3 rounded-xl font-black border-2 border-transparent group-hover:border-pink-500 group-hover:bg-pink-600 transition-colors hidden sm:block">
+              <div className="shrink-0 bg-black text-white px-6 py-3 rounded-xl font-black border-2 border-transparent group-hover:border-primary group-hover:bg-primary transition-colors hidden sm:block">
                 Tulis Pesan &rarr;
               </div>
             </motion.div>
