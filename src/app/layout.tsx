@@ -12,6 +12,7 @@ import { SplashCursor } from "@/components/ui/SplashCursor";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { FastRain } from "@/components/ui/FastRain";
 import { Mascot } from "@/components/ui/Mascot";
+import { NeoRadio } from "@/components/ui/NeoRadio";
 
 export const metadata: Metadata = {
   title: "DockSidz and Tools - Anti Ribet Club",
@@ -33,6 +34,7 @@ export default function RootLayout({
         <SplashCursor />
         <CustomCursor />
         <Mascot />
+        <NeoRadio />
         {children}
       </body>
     </html>
