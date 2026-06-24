@@ -10,7 +10,6 @@ const spaceGrotesk = Space_Grotesk({
 import { WelcomeScreen } from "@/components/ui/WelcomeScreen";
 import { SplashCursor } from "@/components/ui/SplashCursor";
 import { CustomCursor } from "@/components/ui/CustomCursor";
-import { GridBackground } from "@/components/ui/GridBackground";
 import { FastRain } from "@/components/ui/FastRain";
 import { Mascot } from "@/components/ui/Mascot";
 
@@ -29,7 +28,6 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} antialiased bg-background text-text selection:bg-primary selection:text-white`}
       >
-        <GridBackground />
         <FastRain />
         <WelcomeScreen />
         <SplashCursor />
