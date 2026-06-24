@@ -19,6 +19,12 @@ export function WebTraffic() {
   useEffect(() => {
     setMounted(true);
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    
+    // Eksplisit mendaftarkan Service Worker untuk PWABuilder
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(console.error);
+    }
+    
     return () => clearInterval(timer);
   }, []);
 
