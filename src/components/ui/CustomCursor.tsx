@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, useSpring, useMotionValue } from "framer-motion";
+import { MousePointer2 } from "lucide-react";
 
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
@@ -50,28 +51,21 @@ export function CustomCursor() {
     >
       <motion.div
         animate={{
-          scale: isHovering ? 1.2 : 1,
-          rotate: isHovering ? -10 : 0,
+          scale: isHovering ? 1.3 : 1,
+          rotate: isHovering ? -15 : 0,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
-        {/* SVG Kursor Asli Diperkecil (Width/Height 20) */}
-        <svg 
-          width="20" 
-          height="20" 
-          viewBox="0 0 28 32" 
-          fill="none" 
-          xmlns="http://www.w3.org/2000/svg" 
-          className="text-primary" 
-          style={{ filter: "drop-shadow(2px 2px 0px var(--color-border))" }}
-        >
-          <path 
-            d="M2.54011 28.5303L0.985926 1.76451C0.844784 -0.665793 3.65593 -1.82173 5.30939 0.239328L26.3315 26.4385C27.7944 28.2619 26.3768 31.0601 24.0326 30.9818L13.882 30.6432L6.15574 38.6534C4.69466 40.1685 2.15579 38.9959 2.37877 36.8835L3.10976 29.9575L2.54011 28.5303Z" 
-            fill="currentColor" 
-            stroke="var(--color-border)" 
-            strokeWidth="2" 
-          />
-        </svg>
+        {/* SVG Kursor Panah Standar */}
+        <MousePointer2 
+          className="w-6 h-6 text-primary fill-primary" 
+          strokeWidth={2}
+          stroke="var(--color-border)"
+          style={{ 
+            filter: "drop-shadow(2px 2px 0px var(--color-border))",
+            transform: "rotate(-15deg)" // Miringkan sedikit agar lebih natural mirip kursor OS
+          }}
+        />
       </motion.div>
     </motion.div>
   );
