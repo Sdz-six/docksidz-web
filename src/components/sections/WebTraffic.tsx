@@ -139,7 +139,7 @@ export function WebTraffic() {
             <Clock className="w-8 h-8 mb-4 text-[#9CA3AF]" strokeWidth={1.5} />
             <p className="font-bold text-lg mb-1">{mounted ? `${currentTime.toLocaleTimeString('id-ID', { hour12: false })} WIB` : "Memuat Waktu..."}</p>
             <p className="text-sm text-[#9CA3AF] mb-1">{mounted ? `${["Minggu", "Sen", "Sel", "Rabu", "Kamis", "Jumat", "Sabtu"][currentTime.getDay()]}, ${currentTime.getDate()} ${["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"][currentTime.getMonth()]} ${currentTime.getFullYear()}` : "..."}</p>
-            <p className="text-sm text-[#9CA3AF]">Status: Online & Secure</p>
+            <p className="text-sm text-[#9CA3AF]">Zona Waktu: {mounted ? Intl.DateTimeFormat().resolvedOptions().timeZone : "..."}</p>
           </motion.div>
 
           {/* Card 3: Network & OS */}
