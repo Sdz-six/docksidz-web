@@ -109,6 +109,13 @@ const aiTools = [
 
 const utilityTools = [
   {
+    id: "guestbook",
+    title: "Papan Coretan Tamu",
+    description: "Tinggalkan pesan, salam, atau coretan misterius dalam bentuk kertas tempel yang bisa digeser.",
+    icon: BookOpen,
+    color: "bg-[#F59E0B]",
+  },
+  {
     id: "url-shortener",
     title: "URL Shortener",
     description: "Perpendek link panjang Anda agar lebih rapi dan mudah dibagikan.",
