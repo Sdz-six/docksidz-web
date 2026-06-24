@@ -24,10 +24,26 @@ export function FastRain() {
   const [rainLayer3, setRainLayer3] = useState("");
 
   useEffect(() => {
-    setRainLayer1(generateShadows(150));
-    setRainLayer2(generateShadows(100));
-    setRainLayer3(generateShadows(50));
+    const updateIntensity = (intensity: string) => {
+      let l1 = 150, l2 = 100, l3 = 50;
+      if (intensity === "gerimis") { l1 = 40; l2 = 20; l3 = 10; }
+      else if (intensity === "badai") { l1 = 300; l2 = 200; l3 = 100; }
+      
+      setRainLayer1(generateShadows(l1));
+      setRainLayer2(generateShadows(l2));
+      setRainLayer3(generateShadows(l3));
+    };
+
+    // Default normal
+    updateIntensity("normal");
     setIsMounted(true);
+
+    const handleIntensityChange = (e: any) => {
+      updateIntensity(e.detail);
+    };
+
+    window.addEventListener("rain-intensity-changed", handleIntensityChange);
+    return () => window.removeEventListener("rain-intensity-changed", handleIntensityChange);
   }, []);
 
   useEffect(() => {

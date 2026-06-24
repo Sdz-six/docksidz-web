@@ -18,7 +18,7 @@ export function Footer() {
           </a>
         </div>
 
-        <p className="text-muted text-sm font-medium flex items-center justify-center md:justify-start gap-1">
+        <p className="text-muted text-sm font-medium flex items-center justify-center md:justify-start gap-1 pr-24 md:pr-48 w-full md:w-auto mt-6 md:mt-0">
           &copy; {new Date().getFullYear()} DockSidz and Tools. Dibuat oleh SidzJago <span className="text-xl">😹</span>
         </p>
       </div>

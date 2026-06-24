@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, Globe, Monitor, MapPin, Cpu, Users, Battery, Clock, Server, LineChart } from "lucide-react";
+import { Activity, Clock, Users, Globe, Battery, Server, CloudRain } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function WebTraffic() {
   const [visitorData, setVisitorData] = useState<any>(null);
   const [browserName, setBrowserName] = useState("");
-  const [osName, setOsName] = useState("");
+  const [osName, setOsName] = useState<string>("Unknown");
+  const [rainIntensity, setRainIntensity] = useState<string>("normal");
   const [hits, setHits] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState("100%");
@@ -86,6 +87,11 @@ export function WebTraffic() {
       });
   }, []);
 
+  const changeRainIntensity = (intensity: string) => {
+    setRainIntensity(intensity);
+    window.dispatchEvent(new CustomEvent("rain-intensity-changed", { detail: intensity }));
+  };
+
   return (
     <section className="py-20 bg-background border-t-4 border-border relative overflow-hidden">
       {/* Background Decor */}
@@ -124,6 +130,34 @@ export function WebTraffic() {
             <p className="text-sm text-[#9CA3AF] mb-1">OS: {osName}</p>
             <p className="text-sm text-[#9CA3AF]">Browser: {browserName}</p>
           </motion.div>
+        </div>
+
+        {/* Rain Intensity Controller */}
+        <div className="mt-12 max-w-lg mx-auto bg-[#2A303C]/70 backdrop-blur-md rounded-xl p-4 border border-white/5 flex flex-col items-center shadow-lg">
+          <div className="flex items-center gap-2 mb-3 text-[#E2E8F0] font-bold">
+            <CloudRain className="w-5 h-5 text-primary" />
+            <span>Kontrol Cuaca: Intensitas Hujan</span>
+          </div>
+          <div className="flex bg-black/40 rounded-lg p-1 w-full relative">
+            <button
+              onClick={() => changeRainIntensity("gerimis")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "gerimis" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Gerimis
+            </button>
+            <button
+              onClick={() => changeRainIntensity("normal")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "normal" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Normal
+            </button>
+            <button
+              onClick={() => changeRainIntensity("badai")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "badai" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Badai
+            </button>
+          </div>
         </div>
       </div>
     </section>
