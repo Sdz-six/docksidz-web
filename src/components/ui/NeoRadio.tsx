@@ -7,7 +7,7 @@ import { Play, Pause, SkipForward, Radio, Volume2, VolumeX, Music, Link as LinkI
 
 // Stasiun radio default menggunakan video yang terjamin bisa di-embed (Bukan Live Stream agar lebih stabil)
 const DEFAULT_STATIONS = [
-  { id: "5yx6BWlEVcY", name: "Hujan & Kenangan", genre: "Chillhop Jernih (No Noise)" }, // VOD Lofi Clean
+  { id: "5yx6BWlEVcY", name: "CHILLHOP", genre: "Chillhop Jernih (No Noise)" }, // VOD Lofi Clean
   { id: "CUSTOM", name: "Stasiun Kustom", genre: "Pilihan Anda Sendiri" }
 ];
 
