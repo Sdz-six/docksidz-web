@@ -15,6 +15,7 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
   const [winner, setWinner] = useState<string | null>(null);
   const [score, setScore] = useState({ player: 0, bot: 0 });
   const [showReward, setShowReward] = useState(false);
+  const [currentLevel, setCurrentLevel] = useState(1);
 
   const calculateWinner = (squares: (string | null)[]) => {
     const lines = [
@@ -30,9 +31,6 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
     }
     return null;
   };
-
-  // Menentukan Level berdasarkan skor (Max Level 3)
-  const currentLevel = Math.min(3, score.player + 1);
 
   // Logika AI Cerdas (Mencari langkah menang atau memblokir)
   const findWinningMove = (boardState: (string | null)[], playerMark: string) => {
@@ -186,7 +184,7 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
         <div className="flex justify-between items-center p-4 border-b-4 border-border bg-primary text-white">
           <div className="flex items-center gap-3">
             <AlertTriangle className="text-yellow-400" />
-            <h2 className="text-xl font-black tracking-widest">LEVEL {currentLevel}: {currentLevel === 1 ? 'EASY' : currentLevel === 2 ? 'MEDIUM' : 'IMPOSSIBLE'}</h2>
+            <h2 className="text-xl font-black tracking-widest">RAHASIA: TIC TAC TOE</h2>
           </div>
           <button 
             onClick={onClose}
@@ -197,6 +195,28 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
         </div>
 
         <div className="p-6 flex flex-col items-center">
+          {/* Level Selection */}
+          <div className="flex gap-2 mb-6 w-full justify-center">
+            <button 
+              onClick={() => { setCurrentLevel(1); resetGame(); }}
+              className={`px-4 py-2 text-xs font-bold uppercase rounded-lg border-2 border-border neo-brutalist-shadow-sm transition-transform active:scale-95 ${currentLevel === 1 ? 'bg-primary text-white' : 'bg-surface hover:bg-border/20'}`}
+            >
+              Easy
+            </button>
+            <button 
+              onClick={() => { setCurrentLevel(2); resetGame(); }}
+              className={`px-4 py-2 text-xs font-bold uppercase rounded-lg border-2 border-border neo-brutalist-shadow-sm transition-transform active:scale-95 ${currentLevel === 2 ? 'bg-[#F59E0B] text-black' : 'bg-surface hover:bg-border/20'}`}
+            >
+              Medium
+            </button>
+            <button 
+              onClick={() => { setCurrentLevel(3); resetGame(); }}
+              className={`px-4 py-2 text-xs font-bold uppercase rounded-lg border-2 border-border neo-brutalist-shadow-sm transition-transform active:scale-95 ${currentLevel === 3 ? 'bg-red-500 text-white' : 'bg-surface hover:bg-border/20'}`}
+            >
+              Impossible
+            </button>
+          </div>
+
           {/* Scoreboard */}
           <div className="flex justify-between w-full mb-8">
             <div className={`px-4 py-2 border-4 border-border rounded-xl neo-brutalist-shadow flex flex-col items-center w-[120px] transition-colors ${isXNext && !winner ? 'bg-primary text-white' : 'bg-background'}`}>
