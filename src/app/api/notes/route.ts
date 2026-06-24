@@ -2,16 +2,19 @@ import { NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 
 // Inisialisasi Redis client dengan credential dari Vercel Environment Variables
+const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "";
+const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
+
 const redis = new Redis({
-  url: process.env.KV_REST_API_URL || "",
-  token: process.env.KV_REST_API_TOKEN || "",
+  url: redisUrl,
+  token: redisToken,
 });
 
 export async function GET() {
   try {
     // Jika tidak ada URL, berarti user belum setup Vercel KV. Beri response kosong agar web tidak crash.
-    if (!process.env.KV_REST_API_URL) {
-      return NextResponse.json({ notes: [], error: "KV_REST_API_URL is missing. Please setup Upstash Redis." });
+    if (!redisUrl) {
+      return NextResponse.json({ notes: [], error: "KV_REST_API_URL or UPSTASH_REDIS_REST_URL is missing. Please setup Upstash Redis." });
     }
 
     // Ambil data catatan dari database Redis (key: 'docksidz_guestbook_notes')
@@ -25,8 +28,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (!process.env.KV_REST_API_URL) {
-      return NextResponse.json({ success: false, error: "KV_REST_API_URL is missing" }, { status: 500 });
+    if (!redisUrl) {
+      return NextResponse.json({ success: false, error: "Redis URL is missing" }, { status: 500 });
     }
 
     const body = await request.json();
