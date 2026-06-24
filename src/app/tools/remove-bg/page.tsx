@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Upload, Download, Scissors, Loader2, Image as ImageIcon, ArrowLeft, Info, Key } from "lucide-react";
+import { Upload, Download, Scissors, Loader2, Image as ImageIcon, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
@@ -10,13 +10,7 @@ export default function RemoveBg() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [apiKey, setApiKey] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const savedKey = localStorage.getItem("remove_bg_api_key");
-    if (savedKey) setApiKey(savedKey);
-  }, []);
 
   useEffect(() => {
     return () => {
@@ -25,11 +19,6 @@ export default function RemoveBg() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
     };
   }, [previewUrl, resultUrl]);
-
-  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setApiKey(e.target.value);
-    localStorage.setItem("remove_bg_api_key", e.target.value);
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,29 +35,21 @@ export default function RemoveBg() {
   const processImage = async () => {
     if (!imageFile) return;
     
-    if (!apiKey.trim()) {
-      alert("Silakan masukkan API Key Remove.bg terlebih dahulu!");
-      return;
-    }
-    
     setIsProcessing(true);
 
     try {
       const formData = new FormData();
       formData.append("image_file", imageFile);
-      formData.append("size", "auto"); // Resolusi tinggi maksimal dari API
 
-      const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+      // Menembak ke internal API agar API Key tetap rahasia di server
+      const response = await fetch("/api/remove-bg", {
         method: "POST",
-        headers: {
-          "X-Api-Key": apiKey.trim()
-        },
         body: formData
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.errors?.[0]?.title || "Gagal menghubungi server API. Pastikan API Key benar dan koneksi stabil.");
+        throw new Error(errorData.error || "Gagal memproses gambar. Kuota API mungkin habis.");
       }
 
       const imageBlob = await response.blob();
@@ -107,32 +88,13 @@ export default function RemoveBg() {
           </div>
 
           <div className="relative z-10">
-            <div className="flex items-center gap-4 mb-6">
+            <div className="flex items-center gap-4 mb-8">
               <div className="bg-[#8B5CF6] p-4 rounded-2xl border-4 border-border neo-brutalist-shadow-sm text-white">
                 <SparklesIcon className="w-10 h-10" />
               </div>
               <div>
                 <h1 className="text-3xl md:text-4xl font-black tracking-tight text-text">Hapus Latar Belakang</h1>
-                <p className="text-muted text-lg mt-1 font-medium">Potong background foto instan dan sempurna menggunakan Remove.bg API</p>
-              </div>
-            </div>
-
-            <div className="mb-8 p-6 bg-surface border-4 border-border rounded-2xl neo-brutalist-shadow-sm space-y-4">
-              <div className="flex items-start gap-3">
-                <Key className="w-6 h-6 text-[#8B5CF6] shrink-0 mt-1" />
-                <div className="flex-grow">
-                  <label className="block font-bold text-lg mb-2">API Key Remove.bg</label>
-                  <input 
-                    type="text" 
-                    value={apiKey}
-                    onChange={handleApiKeyChange}
-                    placeholder="Masukkan API Key Anda di sini..." 
-                    className="w-full bg-background border-4 border-border rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors font-medium"
-                  />
-                  <p className="text-sm text-muted mt-2 font-medium">
-                    Dapatkan API Key gratis (50 foto/bulan) di <a href="https://www.remove.bg/api" target="_blank" rel="noreferrer" className="text-primary hover:underline font-bold">www.remove.bg/api</a>. Key Anda hanya disimpan di *browser* ini dan tidak dikirim ke *server* kami.
-                  </p>
-                </div>
+                <p className="text-muted text-lg mt-1 font-medium">Potong background otomatis didukung oleh Remove.bg API</p>
               </div>
             </div>
 
