@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 
@@ -14,9 +14,19 @@ import { FastRain } from "@/components/ui/FastRain";
 import { Mascot } from "@/components/ui/Mascot";
 import { NeoRadio } from "@/components/ui/NeoRadio";
 
+export const viewport: Viewport = {
+  themeColor: "#111844",
+};
+
 export const metadata: Metadata = {
   title: "DockSidz and Tools - Anti Ribet Club",
   description: "Koleksi utilitas super lengkap buat ngebantu harimu. Konversi PDF, unduh video, AI, sampai cari resep masakan ada di sini! Didesain pake Neo-Brutalism.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "DockSidz",
+  },
 };
 
 export default function RootLayout({
