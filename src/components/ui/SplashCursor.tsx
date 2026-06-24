@@ -59,14 +59,14 @@ class Particle {
     this.color = colors[Math.floor(Math.random() * colors.length)];
     this.angle = Math.random() * Math.PI * 2;
     
-    // Jika burst (diklik), kotak melesat lebih cepat dan jauh
-    const speed = isBurst ? 8 : 2;
+    // Jika burst (diklik), kotak melesat lebih pelan dan santai
+    const speed = isBurst ? 4 : 1.5;
     this.vx = (Math.random() - 0.5) * speed;
     this.vy = (Math.random() - 0.5) * speed;
     
-    this.va = (Math.random() - 0.5) * 0.2; // Kecepatan putaran
+    this.va = (Math.random() - 0.5) * 0.1; // Kecepatan putaran lebih pelan
     this.life = 1.0;
-    this.decay = Math.random() * 0.02 + 0.01; // Kecepatan menghilang
+    this.decay = Math.random() * 0.015 + 0.005; // Menghilang lebih perlahan dan smooth
   }
 
   update() {
@@ -137,8 +137,8 @@ export function SplashCursor() {
 
     const handleClick = (e: MouseEvent) => {
       playBubbleSound();
-      // Ledakan partikel saat diklik
-      for(let i = 0; i < 15; i++){
+      // Ledakan partikel saat diklik dikurangi jumlahnya
+      for(let i = 0; i < 8; i++){
         particles.push(new Particle(e.clientX, e.clientY, true));
       }
     };
