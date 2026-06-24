@@ -29,7 +29,7 @@ export function StickyNotes() {
     setIsMounted(true);
     const fetchNotes = async () => {
       try {
-        const res = await fetch('/api/notes');
+        const res = await fetch('/api/notes', { cache: 'no-store' });
         const data = await res.json();
         
         if (data.notes && data.notes.length > 0) {
