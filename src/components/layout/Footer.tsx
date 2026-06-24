@@ -35,6 +35,19 @@ export function Footer() {
           </div>
         </div>
       </div>
+
+      {/* Tombol Terlarang (Chaos Mode) */}
+      <button 
+        onClick={() => window.dispatchEvent(new CustomEvent("trigger-chaos-modal"))}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-1/2 md:top-12 z-20 flex items-center justify-center w-16 h-16 bg-red-600 border-4 border-black rounded-full shadow-[0_8px_0_#000] hover:translate-y-2 hover:shadow-[0_4px_0_#000] active:translate-y-4 active:shadow-none transition-all group"
+      >
+        <div className="absolute inset-2 border-2 border-black/30 rounded-full flex items-center justify-center">
+          <Skull className="w-6 h-6 text-black group-hover:scale-110 transition-transform" />
+        </div>
+        <span className="absolute -top-12 bg-black text-white text-xs font-black px-3 py-1.5 border-2 border-white/20 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+          ⚠️ JANGAN DITEKAN!
+        </span>
+      </button>
     </footer>
   );
 }

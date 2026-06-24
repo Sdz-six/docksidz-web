@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, RefreshCcw, Skull, Terminal } from "lucide-react";
+import { AlertTriangle, RefreshCcw, Terminal } from "lucide-react";
 
 export function ChaosMode() {
   const [isChaos, setIsChaos] = useState(false);
@@ -26,21 +26,25 @@ export function ChaosMode() {
     window.location.reload();
   };
 
+  useEffect(() => {
+    const handleChaos = () => {
+      setIsChaos(true);
+      document.body.classList.add("chaos-active");
+    };
+
+    const handleModal = () => setShowConfirmModal(true);
+
+    window.addEventListener("trigger-chaos", handleChaos);
+    window.addEventListener("trigger-chaos-modal", handleModal);
+    
+    return () => {
+      window.removeEventListener("trigger-chaos", handleChaos);
+      window.removeEventListener("trigger-chaos-modal", handleModal);
+    };
+  }, []);
+
   return (
     <>
-      {/* Tombol Terlarang (Chaos Mode) */}
-      <button 
-        onClick={() => setShowConfirmModal(true)}
-        className="fixed bottom-6 right-[35vw] md:right-72 z-[45] flex items-center justify-center w-12 h-12 md:w-16 md:h-16 bg-red-600 border-4 border-black rounded-full shadow-[0_4px_0_#000] md:shadow-[0_8px_0_#000] hover:translate-y-1 md:hover:translate-y-2 hover:shadow-[0_2px_0_#000] md:hover:shadow-[0_4px_0_#000] active:translate-y-2 md:active:translate-y-4 active:shadow-none transition-all group"
-      >
-        <div className="absolute inset-1 md:inset-2 border-2 border-black/30 rounded-full flex items-center justify-center">
-          <Skull className="w-5 h-5 md:w-6 md:h-6 text-black group-hover:scale-110 transition-transform" />
-        </div>
-        <span className="absolute -top-10 md:-top-12 bg-black text-white text-[10px] md:text-xs font-black px-2 md:px-3 py-1 md:py-1.5 border-2 border-white/20 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-          ⚠️ JANGAN DITEKAN!
-        </span>
-      </button>
-
       {/* Modal Konfirmasi Ala Hacker / Error */}
       <AnimatePresence>
         {showConfirmModal && (
