@@ -10,7 +10,7 @@ export function WebTraffic() {
   const [browserName, setBrowserName] = useState("");
   const [osName, setOsName] = useState<string>("Unknown");
   const [rainIntensity, setRainIntensity] = useState<string>("normal");
-  const [selectedMascot, setSelectedMascot] = useState<string>("/mascot.png");
+  const [selectedMascot, setSelectedMascot] = useState<string>("off");
   const [hits, setHits] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState("100%");

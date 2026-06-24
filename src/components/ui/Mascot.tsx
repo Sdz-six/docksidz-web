@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { MascotGame } from "./MascotGame";
 
 export function Mascot() {
-  const [mascotSrc, setMascotSrc] = useState("/mascot.png");
+  const [mascotSrc, setMascotSrc] = useState("off");
   const [isGameOpen, setIsGameOpen] = useState(false);
   
   const clickCountRef = useRef(0);
