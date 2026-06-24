@@ -4,23 +4,27 @@ import { createClient } from "redis";
 export const dynamic = "force-dynamic"; // Matikan cache agresif Vercel
 
 // URL diambil dari environment variable bawaan integrasi Vercel Redis
-const redisUrl = process.env.REDIS_URL || process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL || "";
+const redisUrl = process.env.KV_URL || process.env.REDIS_URL || process.env.UPSTASH_REDIS_URL || "";
 
 // Fungsi pembantu untuk mendapatkan client Redis yang terhubung
 async function getRedisClient() {
-  if (!redisUrl) return null;
-  const client = createClient({ url: redisUrl });
-  client.on('error', (err) => console.error('Redis Client Error', err));
-  await client.connect();
-  return client;
+  try {
+    // Jika ada URL (berawalan redis:// atau rediss://)
+    const client = redisUrl.startsWith("redis") 
+      ? createClient({ url: redisUrl }) 
+      : createClient(); // Fallback ke default Vercel
+      
+    client.on('error', (err) => console.error('Redis Client Error', err));
+    await client.connect();
+    return client;
+  } catch (err) {
+    console.error("Gagal connect ke Redis:", err);
+    return null;
+  }
 }
 
 export async function GET() {
   try {
-    if (!redisUrl) {
-      return NextResponse.json({ notes: [], error: "REDIS_URL is missing. Please check your Vercel Redis integration." });
-    }
-
     const client = await getRedisClient();
     if (!client) {
         return NextResponse.json({ notes: [], error: "Failed to connect to Redis" });
@@ -39,10 +43,6 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (!redisUrl) {
-      return NextResponse.json({ success: false, error: "Redis URL is missing" }, { status: 500 });
-    }
-
     const body = await request.json();
     const { notes } = body;
 
