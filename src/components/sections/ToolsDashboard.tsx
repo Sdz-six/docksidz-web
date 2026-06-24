@@ -39,13 +39,23 @@ const documentTools = [
     description: "Satukan beberapa file PDF terpisah menjadi satu dokumen utuh.",
     icon: Layers,
     color: "bg-[#8B5CF6]",
-  },
+  }
+];
+
+const imageTools = [
   {
     id: "image-converter",
     title: "Pengubah Format Gambar",
     description: "Ubah gambar JPG, PNG, atau WebP secara instan tanpa server.",
     icon: RefreshCw,
     color: "bg-[#22C55E]",
+  },
+  {
+    id: "remove-bg",
+    title: "Hapus Latar Belakang",
+    description: "Hapus background foto 100% resolusi asli menggunakan AI lokal.",
+    icon: Sparkles,
+    color: "bg-[#8B5CF6]",
   }
 ];
 
@@ -205,6 +215,41 @@ export function ToolsDashboard() {
             className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 max-w-6xl mx-auto"
           >
             {documentTools.map((tool) => (
+              <Link key={tool.id} href={`/tools/${tool.id}`} className="block h-full outline-none">
+                <motion.div
+                  variants={itemVariants}
+                  whileHover={{ scale: 1.02, y: -5 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="h-full bg-surface/70 backdrop-blur-md border-2 md:border-4 border-border rounded-xl md:rounded-2xl p-3 md:p-6 neo-brutalist-shadow-sm md:neo-brutalist-shadow transition-shadow duration-300 hover:neo-brutalist-shadow-hover flex flex-col items-center text-center group cursor-pointer"
+                >
+                  <div className={`w-12 h-12 md:w-20 md:h-20 rounded-xl border-2 md:border-4 border-border mb-6 flex items-center justify-center neo-brutalist-shadow-sm group-hover:scale-110 transition-transform duration-300 ${tool.color}`}>
+                    <tool.icon className="w-6 h-6 md:w-10 md:h-10 text-[#111844]" />
+                  </div>
+                  <h3 className="text-sm md:text-xl font-bold mb-1 md:mb-3 leading-tight group-hover:text-primary transition-colors">{tool.title}</h3>
+                  <p className="text-muted text-[10px] md:text-sm flex-grow leading-tight md:leading-normal">{tool.description}</p>
+                </motion.div>
+              </Link>
+            ))}
+          </motion.div>
+        </div>
+
+        {/* Seksi Alat Gambar */}
+        <div className="mb-16">
+          <div className="flex items-center gap-4 mb-8 max-w-6xl mx-auto">
+            <div className="h-2 flex-grow bg-border rounded-full hidden sm:block"></div>
+            <h3 className="text-2xl md:text-3xl font-black bg-surface/70 backdrop-blur-md px-6 py-2 border-4 border-border rounded-xl neo-brutalist-shadow-sm">
+              Alat Gambar & Media
+            </h3>
+            <div className="h-2 flex-grow bg-border rounded-full hidden sm:block"></div>
+          </div>
+          
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8 max-w-6xl mx-auto"
+          >
+            {imageTools.map((tool) => (
               <Link key={tool.id} href={`/tools/${tool.id}`} className="block h-full outline-none">
                 <motion.div
                   variants={itemVariants}
