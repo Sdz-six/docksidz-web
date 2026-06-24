@@ -1,27 +1,36 @@
 import { NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
+import { createClient } from "redis";
 
 export const dynamic = "force-dynamic"; // Matikan cache agresif Vercel
 
-// Inisialisasi Redis client dengan credential dari Vercel Environment Variables
-const redisUrl = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || "";
-const redisToken = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || "";
+// URL diambil dari environment variable bawaan integrasi Vercel Redis
+const redisUrl = process.env.REDIS_URL || process.env.KV_URL || process.env.UPSTASH_REDIS_REST_URL || "";
 
-const redis = new Redis({
-  url: redisUrl,
-  token: redisToken,
-});
+// Fungsi pembantu untuk mendapatkan client Redis yang terhubung
+async function getRedisClient() {
+  if (!redisUrl) return null;
+  const client = createClient({ url: redisUrl });
+  client.on('error', (err) => console.error('Redis Client Error', err));
+  await client.connect();
+  return client;
+}
 
 export async function GET() {
   try {
-    // Jika tidak ada URL, berarti user belum setup Vercel KV. Beri response kosong agar web tidak crash.
     if (!redisUrl) {
-      return NextResponse.json({ notes: [], error: "KV_REST_API_URL or UPSTASH_REDIS_REST_URL is missing. Please setup Upstash Redis." });
+      return NextResponse.json({ notes: [], error: "REDIS_URL is missing. Please check your Vercel Redis integration." });
+    }
+
+    const client = await getRedisClient();
+    if (!client) {
+        return NextResponse.json({ notes: [], error: "Failed to connect to Redis" });
     }
 
     // Ambil data catatan dari database Redis (key: 'docksidz_guestbook_notes')
-    const notes = await redis.get("docksidz_guestbook_notes");
-    return NextResponse.json({ notes: notes || [] });
+    const notesData = await client.get("docksidz_guestbook_notes");
+    await client.disconnect(); // Selalu tutup koneksi di environment serverless
+
+    return NextResponse.json({ notes: notesData || "[]" }); // Kembalikan string JSON atau "[]"
   } catch (error) {
     console.error("Redis GET Error:", error);
     return NextResponse.json({ notes: [], error: "Failed to fetch notes" }, { status: 500 });
@@ -41,11 +50,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: "Invalid data format" }, { status: 400 });
     }
 
+    const client = await getRedisClient();
+    if (!client) {
+      return NextResponse.json({ success: false, error: "Failed to connect to Redis" }, { status: 500 });
+    }
+
     // Karena ini database publik, kita batasi maksimal catatan misal 200 agar tidak jebol
     const limitedNotes = notes.slice(-200);
 
     // Simpan ke Redis
-    await redis.set("docksidz_guestbook_notes", JSON.stringify(limitedNotes));
+    await client.set("docksidz_guestbook_notes", JSON.stringify(limitedNotes));
+    await client.disconnect(); // Tutup koneksi
 
     return NextResponse.json({ success: true });
   } catch (error) {
