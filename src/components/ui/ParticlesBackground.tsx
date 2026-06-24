@@ -54,22 +54,22 @@ export function ParticlesBackground() {
             enable: true,
             outModes: { default: "out" },
             random: false,
-            speed: 25, // Kecepatan tinggi untuk efek hujan deras
+            speed: 15, // Kurangi sedikit kecepatan agar lebih stabil
             straight: true,
           },
           number: {
-            density: { enable: true, area: 800 },
-            value: 250, // Jumlah titik hujan yang sangat banyak
+            density: { enable: true, area: 1200 }, // Memperbesar area agar terlihat lebih menyebar
+            value: 60, // Jumlah diturunkan drastis dari 250 agar ringan di HP 4GB
           },
           opacity: {
-            value: { min: 0.2, max: 0.6 },
+            value: { min: 0.2, max: 0.5 },
           },
           shape: { type: "circle" },
           size: {
-            value: { min: 1, max: 3 }, // Memanjang ke bawah menggunakan stretch CSS atau kecepatan
+            value: { min: 1, max: 2 }, 
           },
         },
-        detectRetina: true,
+        detectRetina: false, // Matikan retina agar tidak menggandakan partikel di layar HD HP
       }}
     />
   );

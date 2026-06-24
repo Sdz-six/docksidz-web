@@ -2,6 +2,41 @@
 
 import React, { useEffect, useRef } from "react";
 
+// Singleton AudioContext agar tidak membuat konteks baru setiap saat
+let audioCtx: AudioContext | null = null;
+
+function playBubbleSound() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    osc.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    const now = audioCtx.currentTime;
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(400, now);
+    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+
+    gainNode.gain.setValueAtTime(0, now);
+    gainNode.gain.linearRampToValueAtTime(1, now + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+    osc.start(now);
+    osc.stop(now + 0.15);
+  } catch (error) {
+    console.error("Audio error:", error);
+  }
+}
+
 class Particle {
   x: number;
   y: number;
@@ -101,6 +136,7 @@ export function SplashCursor() {
     };
 
     const handleClick = (e: MouseEvent) => {
+      playBubbleSound();
       // Ledakan partikel saat diklik
       for(let i = 0; i < 15; i++){
         particles.push(new Particle(e.clientX, e.clientY, true));
