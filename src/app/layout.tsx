@@ -11,7 +11,7 @@ import { WelcomeScreen } from "@/components/ui/WelcomeScreen";
 import { SplashCursor } from "@/components/ui/SplashCursor";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { GridBackground } from "@/components/ui/GridBackground";
-import { ParticlesBackground } from "@/components/ui/ParticlesBackground";
+import { FastRain } from "@/components/ui/FastRain";
 import { Mascot } from "@/components/ui/Mascot";
 
 export const metadata: Metadata = {
@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} antialiased bg-background text-text selection:bg-primary selection:text-white`}
       >
         <GridBackground />
-        <ParticlesBackground />
+        <FastRain />
         <WelcomeScreen />
         <SplashCursor />
         <CustomCursor />
