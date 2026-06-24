@@ -174,7 +174,7 @@ export function StickyNotes() {
       </div>
 
       {/* Render Sticky Notes */}
-      <div className="absolute inset-0 z-10 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 z-30 pointer-events-none overflow-hidden">
         <AnimatePresence>
           {notes.map(note => {
             // Pastikan tidak tembus layar HP (clamp X position)
