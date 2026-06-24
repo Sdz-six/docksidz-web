@@ -51,8 +51,8 @@ export function WebTraffic() {
       }
     }
 
-    // Fetch Global Hit Counter (Local API)
-    fetch("/api/traffic")
+    // Fetch Global Hit Counter (Global API)
+    fetch("/api/traffic", { cache: "no-store" })
       .then(res => res.json())
       .then(data => setHits(data.hits))
       .catch(() => setHits(999));
