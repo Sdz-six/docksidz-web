@@ -10,15 +10,13 @@ const redisUrl = process.env.KV_URL || process.env.REDIS_URL || process.env.UPST
 async function getRedisClient() {
   try {
     // Tambahkan pengaman agar tidak macet (hang) jika Redis lokal tidak ada
-    const clientOptions = {
+    const client = createClient({
       url: redisUrl || undefined,
       socket: {
         connectTimeout: 3000, // Maksimal tunggu 3 detik
         reconnectStrategy: false // Jangan mencoba reconnect berulang-ulang tanpa batas
       }
-    };
-
-    const client = createClient(clientOptions);
+    });
       
     client.on('error', (err) => console.error('Redis Client Error', err));
     await client.connect();
