@@ -90,6 +90,7 @@ export function WebTraffic() {
 
   const changeRainIntensity = (intensity: string) => {
     setRainIntensity(intensity);
+    localStorage.setItem("docksidz_rain", intensity);
     window.dispatchEvent(new CustomEvent("rain-intensity-changed", { detail: intensity }));
   };
 
@@ -102,6 +103,10 @@ export function WebTraffic() {
     const savedMascot = localStorage.getItem("docksidz_mascot");
     if (savedMascot) {
       setSelectedMascot(savedMascot);
+    }
+    const savedRain = localStorage.getItem("docksidz_rain");
+    if (savedRain) {
+      setRainIntensity(savedRain);
     }
   }, []);
 
@@ -151,22 +156,28 @@ export function WebTraffic() {
             <CloudRain className="w-5 h-5 text-primary" />
             <span>Kontrol Cuaca: Intensitas Hujan</span>
           </div>
-          <div className="flex bg-black/40 rounded-lg p-1 w-full relative">
+          <div className="flex flex-wrap bg-black/40 rounded-lg p-1 w-full relative">
+            <button
+              onClick={() => changeRainIntensity("off")}
+              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "off" ? "bg-red-500 text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Mati
+            </button>
             <button
               onClick={() => changeRainIntensity("gerimis")}
-              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "gerimis" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "gerimis" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
             >
               Gerimis
             </button>
             <button
               onClick={() => changeRainIntensity("normal")}
-              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "normal" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "normal" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
             >
               Normal
             </button>
             <button
               onClick={() => changeRainIntensity("badai")}
-              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "badai" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "badai" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
             >
               Badai
             </button>
@@ -180,6 +191,12 @@ export function WebTraffic() {
             <span>Asisten Virtual: Pilih Mascot Anda</span>
           </div>
           <div className="flex flex-wrap justify-center gap-2 bg-black/40 rounded-lg p-2 w-full relative">
+            <button
+              onClick={() => changeMascot("off")}
+              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "off" ? "bg-red-500 text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Mati
+            </button>
             <button
               onClick={() => changeMascot("/mascot.png")}
               className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}

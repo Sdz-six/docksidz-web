@@ -32,8 +32,17 @@ export function FastRain() {
       const mode = e.detail;
       if (mode === "gerimis") setIntensityParams({ count: 30, speedMultiplier: 0.6 });
       else if (mode === "badai") setIntensityParams({ count: 350, speedMultiplier: 1.5 });
+      else if (mode === "off") setIntensityParams({ count: 0, speedMultiplier: 0 }); // Mode Mati
       else setIntensityParams({ count: 120, speedMultiplier: 1 }); // Normal
     };
+
+    // Load preferensi awal dari local storage
+    const savedIntensity = localStorage.getItem("docksidz_rain");
+    if (savedIntensity) {
+      if (savedIntensity === "gerimis") setIntensityParams({ count: 30, speedMultiplier: 0.6 });
+      else if (savedIntensity === "badai") setIntensityParams({ count: 350, speedMultiplier: 1.5 });
+      else if (savedIntensity === "off") setIntensityParams({ count: 0, speedMultiplier: 0 });
+    }
 
     window.addEventListener("rain-intensity-changed", handleIntensityChange);
     return () => window.removeEventListener("rain-intensity-changed", handleIntensityChange);

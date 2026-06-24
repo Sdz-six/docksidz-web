@@ -23,6 +23,8 @@ export function Mascot() {
     return () => window.removeEventListener("mascot-changed", handleMascotChange);
   }, []);
 
+  if (mascotSrc === "off") return null;
+
   return (
     <motion.div
       key={mascotSrc} // Paksa re-render animasi saat maskot berubah
