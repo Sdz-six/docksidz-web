@@ -11,10 +11,24 @@ const DEFAULT_STATIONS = [
   { id: "CUSTOM", name: "Stasiun Kustom", genre: "Pilihan Anda Sendiri" }
 ];
 
-function extractYouTubeID(url: string) {
-  if (url.length === 11) return url; // Jika user langsung memasukkan ID 11 digit
-  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&]{11})/);
-  return match ? match[1] : "";
+function parseYouTubeUrl(url: string): { type: "video" | "playlist", id: string } | null {
+  // Cek apakah ini adalah Playlist
+  const listMatch = url.match(/[?&]list=([a-zA-Z0-9_-]+)/);
+  if (listMatch) {
+    return { type: "playlist", id: listMatch[1] };
+  }
+
+  // Cek apakah ini Video biasa
+  if (url.length === 11 && !url.includes("?")) return { type: "video", id: url };
+  const vidMatch = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&]{11})/);
+  if (vidMatch) {
+    return { type: "video", id: vidMatch[1] };
+  }
+
+  // Jika user langsung memasukkan ID playlist secara manual
+  if (url.startsWith("PL") && url.length > 15) return { type: "playlist", id: url };
+
+  return null;
 }
 
 export function NeoRadio() {
@@ -27,6 +41,7 @@ export function NeoRadio() {
   // Custom URL State
   const [customUrl, setCustomUrl] = useState("");
   const [customId, setCustomId] = useState("");
+  const [customType, setCustomType] = useState<"video" | "playlist">("video");
   
   // Progress State
   const [progress, setProgress] = useState(0);
@@ -77,13 +92,14 @@ export function NeoRadio() {
 
   const handleCustomSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const id = extractYouTubeID(customUrl);
-    if (id) {
-      setCustomId(id);
+    const result = parseYouTubeUrl(customUrl);
+    if (result) {
+      setCustomId(result.id);
+      setCustomType(result.type);
       setIsPlaying(false);
       setProgress(0);
     } else {
-      alert("Link YouTube tidak valid! Masukkan link yang benar.");
+      alert("Link YouTube tidak valid! Masukkan link video atau playlist yang benar.");
     }
   };
 
@@ -114,7 +130,7 @@ export function NeoRadio() {
       <div className="hidden">
         {activeVideoId && (
           <YouTube 
-            videoId={activeVideoId} 
+            videoId={station.id === "CUSTOM" && customType === "playlist" ? undefined : activeVideoId} 
             opts={{
               height: '0',
               width: '0',
@@ -122,6 +138,10 @@ export function NeoRadio() {
                 autoplay: 1,
                 controls: 0,
                 disablekb: 1,
+                ...(station.id === "CUSTOM" && customType === "playlist" && {
+                  listType: 'playlist',
+                  list: activeVideoId
+                })
               },
             }} 
             onReady={onReady} 
