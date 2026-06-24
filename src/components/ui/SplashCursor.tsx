@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef } from "react";
 
-// Singleton AudioContext agar tidak membuat konteks baru setiap saat
 let audioCtx: AudioContext | null = null;
 
 function playBubbleSound() {
@@ -33,7 +32,7 @@ function playBubbleSound() {
     osc.start(now);
     osc.stop(now + 0.15);
   } catch (error) {
-    console.error("Audio error:", error);
+    // Abaikan error audio di perangkat yang tidak mendukung
   }
 }
 
@@ -42,57 +41,40 @@ class Particle {
   y: number;
   size: number;
   color: string;
-  angle: number;
   vx: number;
   vy: number;
-  va: number; // velocity angle
   life: number;
   decay: number;
 
-  constructor(x: number, y: number, isBurst = false) {
+  constructor(x: number, y: number) {
     this.x = x;
     this.y = y;
-    this.size = Math.random() * 12 + 8; // Ukuran kotak 8 - 20
+    this.size = Math.random() * 10 + 6; // Ukuran kotak dikurangi
     
-    // Warna cerah ala Neo-Brutalism / Cyberpunk
+    // Warna cerah
     const colors = ["#3B82F6", "#10B981", "#EF4444", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4"]; 
     this.color = colors[Math.floor(Math.random() * colors.length)];
-    this.angle = Math.random() * Math.PI * 2;
     
-    // Jika burst (diklik), kotak melesat lebih pelan dan santai
-    const speed = isBurst ? 4 : 1.5;
+    // Meluncur dengan kecepatan rendah
+    const speed = 2.5;
     this.vx = (Math.random() - 0.5) * speed;
     this.vy = (Math.random() - 0.5) * speed;
     
-    this.va = (Math.random() - 0.5) * 0.1; // Kecepatan putaran lebih pelan
     this.life = 1.0;
-    this.decay = Math.random() * 0.015 + 0.005; // Menghilang lebih perlahan dan smooth
+    this.decay = 0.03; // Menghilang lebih cepat agar memori lekas kosong
   }
 
   update() {
     this.x += this.vx;
     this.y += this.vy;
-    this.angle += this.va;
     this.life -= this.decay;
   }
 
+  // Draw super ringan: Tanpa Outline, Tanpa Rotasi, Tanpa Save/Restore State
   draw(ctx: CanvasRenderingContext2D) {
-    ctx.save();
-    ctx.translate(this.x, this.y);
-    ctx.rotate(this.angle);
-    
     ctx.globalAlpha = Math.max(0, this.life);
     ctx.fillStyle = this.color;
-    
-    // Efek Outline agar kotak lebih tegas (Brutalist style)
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "rgba(0,0,0,0.5)";
-    
-    // Gambar kotak
-    ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
-    ctx.strokeRect(-this.size / 2, -this.size / 2, this.size, this.size);
-    
-    ctx.restore();
+    ctx.fillRect(this.x, this.y, this.size, this.size);
   }
 }
 
@@ -102,7 +84,7 @@ export function SplashCursor() {
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d", { alpha: true }); // Tanpa desync dsb, cukup murni
     if (!ctx) return;
 
     let width = window.innerWidth;
@@ -112,9 +94,6 @@ export function SplashCursor() {
 
     let particles: Particle[] = [];
     let animationFrameId: number;
-    let mouseX = 0;
-    let mouseY = 0;
-    let isMoving = false;
 
     const handleResize = () => {
       width = window.innerWidth;
@@ -123,30 +102,16 @@ export function SplashCursor() {
       canvas.height = height;
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if(e.touches.length > 0) {
-        mouseX = e.touches[0].clientX;
-        mouseY = e.touches[0].clientY;
-      }
-    };
-
     const handleClick = (e: MouseEvent) => {
       playBubbleSound();
-      // Ledakan partikel saat diklik dikurangi jumlahnya
-      for(let i = 0; i < 8; i++){
-        particles.push(new Particle(e.clientX, e.clientY, true));
+      // Jumlah partikel dikurangi menjadi hanya 5 kotak per klik
+      for(let i = 0; i < 5; i++){
+        particles.push(new Particle(e.clientX, e.clientY));
       }
     };
 
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
-    window.addEventListener("click", handleClick);
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("click", handleClick, { passive: true });
 
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
@@ -156,7 +121,7 @@ export function SplashCursor() {
         particles[i].draw(ctx);
       }
       
-      // Hapus partikel yang sudah mati
+      // Hapus partikel yang sudah mati dari RAM
       particles = particles.filter(p => p.life > 0);
       
       animationFrameId = requestAnimationFrame(animate);
@@ -166,8 +131,6 @@ export function SplashCursor() {
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("click", handleClick);
       cancelAnimationFrame(animationFrameId);
     };
