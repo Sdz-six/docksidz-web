@@ -1,51 +1,14 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
 import { THEMES } from "./ThemeSwitcher";
 
-// Fungsi untuk menghasilkan ratusan partikel hanya menggunakan SATU DOM element (Sangat Ringan)
-const generateShadows = (count: number) => {
-  let shadows = [];
-  for (let i = 0; i < count; i++) {
-    const x = Math.floor(Math.random() * 100);
-    const y = Math.floor(Math.random() * 100);
-    shadows.push(`${x}vw ${y}vh`);
-  }
-  return shadows.join(", ");
-};
-
 export function FastRain() {
-  const [rainColor, setRainColor] = useState("#ffffff");
-  const [isMounted, setIsMounted] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [rainColor, setRainColor] = useState("#9CA3AF"); // Default abu-abu
+  const [intensityParams, setIntensityParams] = useState({ count: 100, speedMultiplier: 1 });
 
-  // Generate shadow strings hanya di client side untuk mencegah Hydration Mismatch
-  const [rainLayer1, setRainLayer1] = useState("");
-  const [rainLayer2, setRainLayer2] = useState("");
-  const [rainLayer3, setRainLayer3] = useState("");
-
-  useEffect(() => {
-    const updateIntensity = (intensity: string) => {
-      let l1 = 150, l2 = 100, l3 = 50;
-      if (intensity === "gerimis") { l1 = 40; l2 = 20; l3 = 10; }
-      else if (intensity === "badai") { l1 = 300; l2 = 200; l3 = 100; }
-      
-      setRainLayer1(generateShadows(l1));
-      setRainLayer2(generateShadows(l2));
-      setRainLayer3(generateShadows(l3));
-    };
-
-    // Default normal
-    updateIntensity("normal");
-    setIsMounted(true);
-
-    const handleIntensityChange = (e: any) => {
-      updateIntensity(e.detail);
-    };
-
-    window.addEventListener("rain-intensity-changed", handleIntensityChange);
-    return () => window.removeEventListener("rain-intensity-changed", handleIntensityChange);
-  }, []);
-
+  // 1. Sinkronisasi Warna dengan Tema (Hanya berjalan saat tema berubah)
   useEffect(() => {
     const updateColor = (themeId: string) => {
       const theme = THEMES.find((t) => t.id === themeId);
@@ -54,58 +17,112 @@ export function FastRain() {
       }
     };
 
+    // Baca tema awal dari local storage
     const savedTheme = localStorage.getItem("docksidz_theme") || "monochrome";
     updateColor(savedTheme);
 
-    const handleThemeChange = (e: any) => {
-      updateColor(e.detail);
-    };
-
+    const handleThemeChange = (e: any) => updateColor(e.detail);
     window.addEventListener("theme-changed", handleThemeChange);
     return () => window.removeEventListener("theme-changed", handleThemeChange);
   }, []);
 
-  return (
-    <div className="fixed inset-0 w-full h-full -z-50 pointer-events-none overflow-hidden" style={{ color: rainColor }}>
-      <style dangerouslySetInnerHTML={{ __html: `
-        .rain-drop {
-          width: 2px;
-          height: 15px;
-          background: transparent;
-          border-radius: 5px;
-        }
-        .rain-layer-1 {
-          box-shadow: ${rainLayer1};
-          animation: rainAnim 1.2s linear infinite;
-        }
-        .rain-layer-2 {
-          box-shadow: ${rainLayer2};
-          animation: rainAnim 1.8s linear infinite;
-          opacity: 0.7;
-          width: 1px;
-          height: 10px;
-        }
-        .rain-layer-3 {
-          box-shadow: ${rainLayer3};
-          animation: rainAnim 2.4s linear infinite;
-          opacity: 0.4;
-          width: 1px;
-          height: 5px;
-        }
-        @keyframes rainAnim {
-          from { transform: translateY(-100vh); }
-          to { transform: translateY(100vh); }
-        }
-      `}} />
+  // 2. Sinkronisasi Intensitas Hujan (Hanya berjalan saat intensitas berubah)
+  useEffect(() => {
+    const handleIntensityChange = (e: any) => {
+      const mode = e.detail;
+      if (mode === "gerimis") setIntensityParams({ count: 30, speedMultiplier: 0.6 });
+      else if (mode === "badai") setIntensityParams({ count: 350, speedMultiplier: 1.5 });
+      else setIntensityParams({ count: 120, speedMultiplier: 1 }); // Normal
+    };
+
+    window.addEventListener("rain-intensity-changed", handleIntensityChange);
+    return () => window.removeEventListener("rain-intensity-changed", handleIntensityChange);
+  }, []);
+
+  // 3. Mesin Animasi Canvas (Sangat Ringan untuk HP Kentang)
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    let animationFrameId: number;
+    let particles: { x: number; y: number; length: number; velocity: number; opacity: number }[] = [];
+
+    // Fungsi inisialisasi partikel (dipanggil saat resize atau ganti intensitas)
+    const initParticles = () => {
+      // Mengurangi drastis jumlah partikel jika layar kecil (HP) agar tidak nge-lag
+      const isMobile = window.innerWidth < 768;
+      let finalCount = intensityParams.count;
+      if (isMobile) finalCount = Math.floor(finalCount * 0.6); // Pangkas 40% di HP
       
-      {/* Hanya render layer hujan jika sudah di mount di client */}
-      {isMounted && (
-        <>
-          <div className="rain-drop rain-layer-1" />
-          <div className="rain-drop rain-layer-2" />
-          <div className="rain-drop rain-layer-3" />
-        </>
-      )}
-    </div>
+      particles = [];
+      for (let i = 0; i < finalCount; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          length: (Math.random() * 20 + 10) * intensityParams.speedMultiplier,
+          velocity: (Math.random() * 15 + 10) * intensityParams.speedMultiplier,
+          opacity: Math.random() * 0.4 + 0.1 // Transparansi halus
+        });
+      }
+    };
+
+    const resize = () => {
+      // Set ukuran kanvas sesuai resolusi layar secara dinamis
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    };
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    // Loop Animasi Utama (Dirender menggunakan Hardware Acceleration / GPU)
+    const render = () => {
+      // Bersihkan kanvas di setiap frame
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.lineWidth = 1.5;
+      ctx.lineCap = "round";
+      ctx.strokeStyle = rainColor; // Warna hujan sesuai tema
+
+      // Gambar seluruh partikel dalam satu siklus memori
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        
+        ctx.globalAlpha = p.opacity; // Terapkan transparansi per rintik
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(p.x, p.y + p.length);
+        ctx.stroke();
+
+        // Gerakkan rintik ke bawah
+        p.y += p.velocity;
+
+        // Jika rintik menyentuh bawah tanah, reset ke atas langit
+        if (p.y > canvas.height) {
+          p.y = -p.length;
+          p.x = Math.random() * canvas.width;
+        }
+      }
+      
+      animationFrameId = requestAnimationFrame(render);
+    };
+
+    render();
+
+    return () => {
+      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [rainColor, intensityParams]); // Re-render canvas HANYA jika warna atau intensitas berubah
+
+  return (
+    <canvas 
+      ref={canvasRef}
+      className="fixed inset-0 w-full h-full -z-50 pointer-events-none"
+    />
   );
 }
