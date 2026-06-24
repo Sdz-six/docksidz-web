@@ -1,19 +1,22 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Upload, Download, Scissors, Loader2, Image as ImageIcon, ArrowLeft, Info } from "lucide-react";
+import { Upload, Download, Scissors, Loader2, Image as ImageIcon, ArrowLeft, Info, Key } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import { removeBackground } from "@imgly/background-removal";
 
 export default function RemoveBg() {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [statusText, setStatusText] = useState("");
+  const [apiKey, setApiKey] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const savedKey = localStorage.getItem("remove_bg_api_key");
+    if (savedKey) setApiKey(savedKey);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -22,6 +25,11 @@ export default function RemoveBg() {
       if (resultUrl) URL.revokeObjectURL(resultUrl);
     };
   }, [previewUrl, resultUrl]);
+
+  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(e.target.value);
+    localStorage.setItem("remove_bg_api_key", e.target.value);
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -33,38 +41,42 @@ export default function RemoveBg() {
     setImageFile(file);
     setPreviewUrl(URL.createObjectURL(file));
     setResultUrl(null);
-    setProgress(0);
-    setStatusText("");
   };
 
   const processImage = async () => {
     if (!imageFile) return;
     
+    if (!apiKey.trim()) {
+      alert("Silakan masukkan API Key Remove.bg terlebih dahulu!");
+      return;
+    }
+    
     setIsProcessing(true);
-    setProgress(0);
-    setStatusText("Mengunduh Mesin AI (Hanya sekali)...");
 
     try {
-      const config = {
-        model: "small", // Model "small" agar ringan untuk HP kentang
-        progress: (key: string, current: number, total: number) => {
-          if (key.includes("fetch")) {
-             const percent = Math.round((current / total) * 100) || 0;
-             setProgress(percent);
-             setStatusText(`Mengunduh AI: ${percent}%`);
-          } else if (key.includes("compute")) {
-             setStatusText("Memotong gambar secara ajaib...");
-             setProgress(100);
-          }
-        }
-      };
+      const formData = new FormData();
+      formData.append("image_file", imageFile);
+      formData.append("size", "auto"); // Resolusi tinggi maksimal dari API
 
-      const imageBlob = await removeBackground(imageFile, config);
+      const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+        method: "POST",
+        headers: {
+          "X-Api-Key": apiKey.trim()
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.errors?.[0]?.title || "Gagal menghubungi server API. Pastikan API Key benar dan koneksi stabil.");
+      }
+
+      const imageBlob = await response.blob();
       const newUrl = URL.createObjectURL(imageBlob);
       setResultUrl(newUrl);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gagal memproses gambar:", error);
-      alert("Terjadi kesalahan. Pastikan koneksi internet stabil karena sistem perlu mengunduh AI saat pertama kali digunakan.");
+      alert(`Terjadi kesalahan: ${error.message}`);
     } finally {
       setIsProcessing(false);
     }
@@ -83,137 +95,164 @@ export default function RemoveBg() {
   return (
     <div className="min-h-screen bg-background pt-24 pb-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        <Link href="/" className="inline-flex items-center gap-2 text-muted hover:text-primary mb-8 transition-colors">
-          <ArrowLeft className="w-4 h-4" />
-          <span>Kembali ke Dashboard</span>
+        <Link href="/#tools" className="inline-flex items-center text-muted hover:text-primary mb-8 font-bold neo-brutalist-shadow-sm bg-surface px-4 py-2 rounded-xl border-2 border-border transition-all hover:translate-y-[-2px]">
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Kembali ke Dashboard
         </Link>
 
-        <div className="bg-surface rounded-2xl p-6 md:p-10 border-2 border-border neo-brutalist-shadow">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="bg-red-500/20 p-3 rounded-xl border-2 border-red-500/50 text-red-500">
-              <Scissors className="w-8 h-8" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Hapus Latar Belakang</h1>
-              <p className="text-muted">Potong background otomatis dengan kualitas asli 100% (No Compression)</p>
-            </div>
+        <div className="bg-surface rounded-2xl p-6 md:p-10 border-2 md:border-4 border-border neo-brutalist-shadow relative overflow-hidden">
+          {/* Dekorasi Background */}
+          <div className="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+            <Scissors className="w-40 h-40" />
           </div>
 
-          <div className="mb-6 p-4 bg-primary/10 border-2 border-primary/20 rounded-xl flex items-start gap-3">
-            <Info className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-            <p className="text-sm text-muted">
-              <strong>Info Penting:</strong> Fitur ini berjalan sepenuhnya di HP/PC Anda tanpa dikirim ke server. 
-              Saat <strong>pertama kali digunakan</strong>, sistem akan memakan waktu untuk mendownload file AI. 
-              Mohon bersabar jika loading terasa lama (terutama di HP kentang).
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Kolom Kiri: Input */}
-            <div className="space-y-6">
-              <div 
-                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer hover:border-primary hover:bg-primary/5 ${previewUrl ? 'border-primary bg-primary/5' : 'border-border'}`}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleFileChange} 
-                  accept="image/png, image/jpeg, image/webp" 
-                  className="hidden" 
-                />
-                
-                {previewUrl ? (
-                  <div className="relative aspect-square w-full max-w-[250px] mx-auto rounded-lg overflow-hidden border-2 border-border shadow-lg">
-                    <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
-                  </div>
-                ) : (
-                  <div className="py-12 flex flex-col items-center justify-center space-y-4">
-                    <div className="bg-background p-4 rounded-full border-2 border-border shadow-sm">
-                      <Upload className="w-8 h-8 text-muted" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-lg">Pilih Foto</p>
-                      <p className="text-sm text-muted">Mendukung JPG, PNG, WebP</p>
-                    </div>
-                  </div>
-                )}
+          <div className="relative z-10">
+            <div className="flex items-center gap-4 mb-6">
+              <div className="bg-[#8B5CF6] p-4 rounded-2xl border-4 border-border neo-brutalist-shadow-sm text-white">
+                <SparklesIcon className="w-10 h-10" />
               </div>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-text">Hapus Latar Belakang</h1>
+                <p className="text-muted text-lg mt-1 font-medium">Potong background foto instan dan sempurna menggunakan Remove.bg API</p>
+              </div>
+            </div>
 
-              <Button 
-                onClick={processImage} 
-                disabled={!imageFile || isProcessing || !!resultUrl}
-                className="w-full h-14 text-lg"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Memproses...
-                  </>
-                ) : resultUrl ? (
-                  <>
-                    <ImageIcon className="w-5 h-5 mr-2" />
-                    Selesai Dipotong!
-                  </>
-                ) : (
-                  <>
-                    <Scissors className="w-5 h-5 mr-2" />
-                    Potong Gambar Sekarang
-                  </>
-                )}
-              </Button>
-
-              {isProcessing && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm font-medium">
-                    <span className="text-primary">{statusText}</span>
-                    <span>{progress}%</span>
-                  </div>
-                  <div className="h-3 w-full bg-surface border-2 border-border rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary transition-all duration-300"
-                      style={{ width: `${progress}%` }}
-                    ></div>
-                  </div>
+            <div className="mb-8 p-6 bg-surface border-4 border-border rounded-2xl neo-brutalist-shadow-sm space-y-4">
+              <div className="flex items-start gap-3">
+                <Key className="w-6 h-6 text-[#8B5CF6] shrink-0 mt-1" />
+                <div className="flex-grow">
+                  <label className="block font-bold text-lg mb-2">API Key Remove.bg</label>
+                  <input 
+                    type="text" 
+                    value={apiKey}
+                    onChange={handleApiKeyChange}
+                    placeholder="Masukkan API Key Anda di sini..." 
+                    className="w-full bg-background border-4 border-border rounded-xl px-4 py-3 outline-none focus:border-primary transition-colors font-medium"
+                  />
+                  <p className="text-sm text-muted mt-2 font-medium">
+                    Dapatkan API Key gratis (50 foto/bulan) di <a href="https://www.remove.bg/api" target="_blank" rel="noreferrer" className="text-primary hover:underline font-bold">www.remove.bg/api</a>. Key Anda hanya disimpan di *browser* ini dan tidak dikirim ke *server* kami.
+                  </p>
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Kolom Kanan: Output */}
-            <div className="space-y-6">
-              <div className="border-2 border-border rounded-xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center bg-[url('https://transparenttextures.com/patterns/cubes.png')] bg-surface/50 relative overflow-hidden">
-                {resultUrl ? (
-                  <div className="relative w-full max-w-[300px] mx-auto z-10">
-                    <img src={resultUrl} alt="Result" className="w-full h-auto drop-shadow-2xl" />
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center justify-center text-muted opacity-50 space-y-4 relative z-10">
-                    <ImageIcon className="w-16 h-16" />
-                    <p className="font-medium">Hasil Potongan akan muncul di sini</p>
-                  </div>
-                )}
-                {/* Background Checkerboard untuk area transparan */}
-                <div className="absolute inset-0 z-0 opacity-10" style={{
-                  backgroundImage: 'repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #ffffff 25%, #ffffff 75%, #000 75%, #000)',
-                  backgroundPosition: '0 0, 10px 10px',
-                  backgroundSize: '20px 20px',
-                }}></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Kolom Kiri: Input */}
+              <div className="space-y-6">
+                <div 
+                  className={`border-4 border-dashed rounded-2xl p-8 text-center transition-all cursor-pointer outline-none hover:bg-surface
+                    ${previewUrl ? 'border-primary bg-primary/10 scale-[1.02]' : 'border-border bg-background'}`}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleFileChange} 
+                    accept="image/png, image/jpeg, image/webp" 
+                    className="hidden" 
+                  />
+                  
+                  {previewUrl ? (
+                    <div className="relative aspect-square w-full max-w-[250px] mx-auto rounded-xl overflow-hidden border-4 border-border neo-brutalist-shadow-sm">
+                      <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="py-8 flex flex-col items-center justify-center space-y-4">
+                      <div className="w-20 h-20 bg-background p-4 rounded-full border-4 border-border shadow-sm flex items-center justify-center neo-brutalist-shadow-sm">
+                        <Upload className="w-10 h-10 text-muted" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-xl mb-1">Pilih Foto</h3>
+                        <p className="text-sm text-muted font-medium">Mendukung JPG, PNG, WebP</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <Button 
+                  onClick={processImage} 
+                  disabled={!imageFile || isProcessing || !!resultUrl}
+                  className="w-full h-16 text-xl font-bold rounded-xl neo-brutalist-shadow"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="w-6 h-6 mr-2 animate-spin" />
+                      Memotong di Server...
+                    </>
+                  ) : resultUrl ? (
+                    <>
+                      <ImageIcon className="w-6 h-6 mr-2" />
+                      Selesai Dipotong!
+                    </>
+                  ) : (
+                    <>
+                      <Scissors className="w-6 h-6 mr-2" />
+                      Hapus Background
+                    </>
+                  )}
+                </Button>
               </div>
 
-              {resultUrl && (
-                <Button 
-                  onClick={handleDownload} 
-                  variant="outline" 
-                  className="w-full h-14 text-lg border-2 border-primary text-primary hover:bg-primary/10"
-                >
-                  <Download className="w-5 h-5 mr-2" />
-                  Unduh Resolusi Asli (PNG)
-                </Button>
-              )}
+              {/* Kolom Kanan: Output */}
+              <div className="space-y-6">
+                <div className="border-4 border-border rounded-2xl p-8 text-center min-h-[300px] flex flex-col items-center justify-center relative overflow-hidden bg-background">
+                  {/* Background Checkerboard untuk area transparan */}
+                  <div className="absolute inset-0 z-0 opacity-20" style={{
+                    backgroundImage: 'repeating-linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%, #000), repeating-linear-gradient(45deg, #000 25%, #ffffff 25%, #ffffff 75%, #000 75%, #000)',
+                    backgroundPosition: '0 0, 10px 10px',
+                    backgroundSize: '20px 20px',
+                  }}></div>
+                  
+                  {resultUrl ? (
+                    <div className="relative w-full max-w-[300px] mx-auto z-10 neo-brutalist-shadow-sm">
+                      <img src={resultUrl} alt="Result" className="w-full h-auto drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] border-4 border-border rounded-xl" />
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center text-muted opacity-50 space-y-4 relative z-10">
+                      <ImageIcon className="w-16 h-16" />
+                      <p className="font-bold text-lg">Hasil akan muncul di sini</p>
+                    </div>
+                  )}
+                </div>
+
+                {resultUrl && (
+                  <Button 
+                    onClick={handleDownload} 
+                    variant="outline" 
+                    className="w-full h-16 text-xl font-bold border-4 border-[#8B5CF6] text-[#8B5CF6] hover:bg-[#8B5CF6] hover:text-white rounded-xl neo-brutalist-shadow transition-all"
+                  >
+                    <Download className="w-6 h-6 mr-2" />
+                    Unduh Gambar (PNG)
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function SparklesIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+      <path d="M5 3v4" />
+      <path d="M19 17v4" />
+      <path d="M3 5h4" />
+      <path d="M17 19h4" />
+    </svg>
   );
 }

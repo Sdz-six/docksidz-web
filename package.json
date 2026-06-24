@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
-    "@imgly/background-removal": "^1.7.0",
     "canvas-confetti": "^1.9.4",
     "cloudconvert": "^3.0.0",
     "clsx": "^2.1.1",
