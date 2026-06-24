@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@distube/ytdl-core": "^4.16.12",
+    "@upstash/redis": "^1.38.0",
     "canvas-confetti": "^1.9.4",
     "cloudconvert": "^3.0.0",
     "clsx": "^2.1.1",

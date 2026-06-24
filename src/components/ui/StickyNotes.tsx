@@ -22,22 +22,62 @@ export function StickyNotes() {
   const [activeColor, setActiveColor] = useState(COLORS[0]);
   const [isMounted, setIsMounted] = useState(false);
 
-  // Load from local storage
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Load from Global Database API (or fallback to local storage if fail)
   useEffect(() => {
     setIsMounted(true);
-    const saved = localStorage.getItem("docksidz_stickynotes");
-    if (saved) {
+    const fetchNotes = async () => {
       try {
-        setNotes(JSON.parse(saved));
-      } catch (e) {}
-    }
+        const res = await fetch('/api/notes');
+        const data = await res.json();
+        
+        if (data.notes && data.notes.length > 0) {
+          // Parse string JSON dari Redis jika berupa string
+          const parsedNotes = typeof data.notes === 'string' ? JSON.parse(data.notes) : data.notes;
+          setNotes(parsedNotes);
+        } else if (data.error && data.error.includes("missing")) {
+          // Fallback lokal jika database belum disetup
+          const saved = localStorage.getItem("docksidz_stickynotes");
+          if (saved) setNotes(JSON.parse(saved));
+        }
+      } catch (e) {
+        // Error network, coba dari localStorage
+        const saved = localStorage.getItem("docksidz_stickynotes");
+        if (saved) setNotes(JSON.parse(saved));
+      }
+    };
+    fetchNotes();
+
+    // Auto-refresh setiap 10 detik agar pengunjung lain bisa melihat updatenya
+    const interval = setInterval(fetchNotes, 10000);
+    return () => clearInterval(interval);
   }, []);
 
-  // Save to local storage
+  // Sync to Global API (debounced) and Local Storage (instant)
   useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem("docksidz_stickynotes", JSON.stringify(notes));
-    }
+    if (!isMounted || notes.length === 0) return;
+
+    // Selalu simpan ke local storage sebagai backup
+    localStorage.setItem("docksidz_stickynotes", JSON.stringify(notes));
+
+    const saveToDB = async () => {
+      setIsSaving(true);
+      try {
+        await fetch('/api/notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notes }),
+        });
+      } catch (e) {
+        console.error("Gagal sinkronisasi ke database", e);
+      }
+      setIsSaving(false);
+    };
+
+    // Debounce save 1 detik agar tidak spam request API saat digeser
+    const timeout = setTimeout(saveToDB, 1000);
+    return () => clearTimeout(timeout);
   }, [notes, isMounted]);
 
   const addNote = (e: React.FormEvent) => {
