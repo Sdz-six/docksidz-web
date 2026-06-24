@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.docksidz_web.twa",
+    "sha256_cert_fingerprints": ["49:F2:15:A7:FB:9F:BA:67:C6:D8:97:9A:24:14:D5:E8:73:51:73:FE:FB:B0:A0:58:4C:F4:A5:E2:09:F7:4D:67"]
+  }
+}]
