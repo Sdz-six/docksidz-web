@@ -128,7 +128,7 @@ export function StickyNotes() {
             maxLength={180}
           />
           
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-6 mt-2">
             <div className="flex gap-2 p-2 bg-surface border-4 border-border rounded-xl">
               {COLORS.map(c => (
                 <button
