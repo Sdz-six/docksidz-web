@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Upload, Download, Scissors, Loader2, Image as ImageIcon, ArrowLeft, Info } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import Link from "next/link";
-import removeBackground from "@imgly/background-removal";
+import { removeBackground } from "@imgly/background-removal";
 
 export default function RemoveBg() {
   const [imageFile, setImageFile] = useState<File | null>(null);
