@@ -9,6 +9,7 @@ export function WebTraffic() {
   const [browserName, setBrowserName] = useState("");
   const [osName, setOsName] = useState<string>("Unknown");
   const [rainIntensity, setRainIntensity] = useState<string>("normal");
+  const [selectedMascot, setSelectedMascot] = useState<string>("/mascot.png");
   const [hits, setHits] = useState<number | null>(null);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [batteryLevel, setBatteryLevel] = useState("100%");
@@ -92,6 +93,18 @@ export function WebTraffic() {
     window.dispatchEvent(new CustomEvent("rain-intensity-changed", { detail: intensity }));
   };
 
+  const changeMascot = (mascotPath: string) => {
+    setSelectedMascot(mascotPath);
+    window.dispatchEvent(new CustomEvent("mascot-changed", { detail: mascotPath }));
+  };
+
+  useEffect(() => {
+    const savedMascot = localStorage.getItem("docksidz_mascot");
+    if (savedMascot) {
+      setSelectedMascot(savedMascot);
+    }
+  }, []);
+
   return (
     <section className="py-20 bg-background border-t-4 border-border relative overflow-hidden">
       {/* Background Decor */}
@@ -156,6 +169,34 @@ export function WebTraffic() {
               className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${rainIntensity === "badai" ? "bg-primary text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
             >
               Badai
+            </button>
+          </div>
+        </div>
+
+        {/* Waifu / Mascot Controller */}
+        <div className="mt-6 max-w-lg mx-auto bg-[#2A303C]/70 backdrop-blur-md rounded-xl p-4 border border-white/5 flex flex-col items-center shadow-lg">
+          <div className="flex items-center gap-2 mb-3 text-[#E2E8F0] font-bold">
+            <Users className="w-5 h-5 text-[#8B5CF6]" />
+            <span>Asisten Virtual: Pilih Waifu Anda</span>
+          </div>
+          <div className="flex bg-black/40 rounded-lg p-1 w-full relative">
+            <button
+              onClick={() => changeMascot("/mascot.png")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Waifu 1
+            </button>
+            <button
+              onClick={() => changeMascot("/mascot2.png")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot2.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Waifu 2
+            </button>
+            <button
+              onClick={() => changeMascot("/mascot3.png")}
+              className={`flex-1 py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot3.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
+            >
+              Waifu 3
             </button>
           </div>
         </div>
