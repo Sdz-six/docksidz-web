@@ -3,44 +3,55 @@
 import { useState, useEffect, useRef } from "react";
 import YouTube, { YouTubeProps } from "react-youtube";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, Pause, SkipForward, Radio, Volume2, VolumeX, Music } from "lucide-react";
+import { Play, Pause, SkipForward, Radio, Volume2, VolumeX, Music, Link as LinkIcon, Check } from "lucide-react";
 
-// Menggunakan Video Berdurasi Panjang (Mix 1-2 Jam) sebagai "Stasiun Radio"
-// Ini lebih aman daripada Playlist yang sering dihapus oleh pembuatnya.
-const STATIONS = [
-  { id: "1fueZCTYkpA", name: "Hujan & Kenangan", genre: "Lo-Fi Chill" },
-  { id: "4xDzrIxZZNc", name: "Fokus Tingkat Dewa", genre: "Synthwave / Cyberpunk" },
-  { id: "uWw93iQk2n0", name: "Doping Programmer", genre: "Aggressive Phonk" },
-  { id: "W1wW6a0XyGE", name: "Warung Kopi Malam", genre: "Acoustic Cafe" }
+// Stasiun radio default menggunakan video yang terjamin bisa di-embed (Lofi Girl dkk)
+const DEFAULT_STATIONS = [
+  { id: "jfKfPfyJRdk", name: "Hujan & Kenangan", genre: "Lo-Fi Hip Hop Live" }, // Lofi Girl
+  { id: "4xDzrIxZZNc", name: "Fokus Tingkat Dewa", genre: "Synthwave / Cyberpunk" }, // Boleh coba lagi, tapi kita punya custom
+  { id: "7NOSDKb0HlU", name: "Warung Kopi Malam", genre: "Acoustic Cafe" }, 
+  { id: "CUSTOM", name: "Stasiun Kustom", genre: "Pilihan Anda Sendiri" }
 ];
+
+function extractYouTubeID(url: string) {
+  if (url.length === 11) return url; // Jika user langsung memasukkan ID 11 digit
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&]{11})/);
+  return match ? match[1] : "";
+}
 
 export function NeoRadio() {
   const [isOpen, setIsOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentStation, setCurrentStation] = useState(0);
-  const [playerInfo, setPlayerInfo] = useState<any>(null);
   const [isReady, setIsReady] = useState(false);
   
-  // Referensi ke player YouTube
+  // Custom URL State
+  const [customUrl, setCustomUrl] = useState("");
+  const [customId, setCustomId] = useState("");
+  
+  // Progress State
+  const [progress, setProgress] = useState(0);
+  
   const playerRef = useRef<any>(null);
+
+  const station = DEFAULT_STATIONS[currentStation];
+  const activeVideoId = station.id === "CUSTOM" ? customId : station.id;
 
   const onReady: YouTubeProps['onReady'] = (event) => {
     playerRef.current = event.target;
     setIsReady(true);
-    // Set volume default agak rendah agar tidak mengagetkan
-    event.target.setVolume(30);
+    event.target.setVolume(40);
   };
 
   const onStateChange: YouTubeProps['onStateChange'] = (event) => {
-    // 1 = playing, 2 = paused, 0 = ended
     if (event.data === 1) setIsPlaying(true);
     else if (event.data === 2) setIsPlaying(false);
-    else if (event.data === 0) nextStation(); // Otomatis pindah jika video habis
+    else if (event.data === 0) nextStation(); // Habis
   };
 
   const togglePlay = () => {
-    if (!playerRef.current) return;
+    if (!playerRef.current || !activeVideoId) return;
     if (isPlaying) {
       playerRef.current.pauseVideo();
     } else {
@@ -60,34 +71,67 @@ export function NeoRadio() {
   };
 
   const nextStation = () => {
-    const nextIndex = (currentStation + 1) % STATIONS.length;
+    const nextIndex = (currentStation + 1) % DEFAULT_STATIONS.length;
     setCurrentStation(nextIndex);
-    setIsPlaying(false); // Reset state loading
+    setIsPlaying(false);
+    setProgress(0);
   };
 
-  const station = STATIONS[currentStation];
+  const handleCustomSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const id = extractYouTubeID(customUrl);
+    if (id) {
+      setCustomId(id);
+      setIsPlaying(false);
+      setProgress(0);
+    } else {
+      alert("Link YouTube tidak valid! Masukkan link yang benar.");
+    }
+  };
+
+  // Real-time Progress Bar Effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isPlaying && playerRef.current) {
+      interval = setInterval(() => {
+        try {
+          const currentTime = playerRef.current.getCurrentTime();
+          const duration = playerRef.current.getDuration();
+          if (duration > 0) {
+            setProgress((currentTime / duration) * 100);
+          } else {
+            // Untuk Live Stream, duration biasanya 0
+            setProgress(100);
+          }
+        } catch (error) {
+          // Abaikan error jika player belum siap
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, activeVideoId]);
 
   return (
     <>
-      {/* Player YouTube Tersembunyi */}
       <div className="hidden">
-        <YouTube 
-          videoId={station.id} 
-          opts={{
-            height: '0',
-            width: '0',
-            playerVars: {
-              autoplay: 1, // Otomatis main saat ganti stasiun
-              controls: 0,
-              disablekb: 1,
-            },
-          }} 
-          onReady={onReady} 
-          onStateChange={onStateChange} 
-        />
+        {activeVideoId && (
+          <YouTube 
+            videoId={activeVideoId} 
+            opts={{
+              height: '0',
+              width: '0',
+              playerVars: {
+                autoplay: 1,
+                controls: 0,
+                disablekb: 1,
+              },
+            }} 
+            onReady={onReady} 
+            onStateChange={onStateChange} 
+          />
+        )}
       </div>
 
-      {/* UI Pemutar Radio */}
       <div className="fixed bottom-6 left-6 z-50 flex flex-col items-start">
         <AnimatePresence>
           {isOpen && (
@@ -110,10 +154,29 @@ export function NeoRadio() {
                 </div>
               </div>
 
+              {/* Form Input Custom URL */}
+              {station.id === "CUSTOM" && (
+                <form onSubmit={handleCustomSubmit} className="mb-4 flex gap-2">
+                  <input 
+                    type="text" 
+                    value={customUrl}
+                    onChange={(e) => setCustomUrl(e.target.value)}
+                    placeholder="Paste link YouTube..."
+                    className="w-full text-xs p-2 rounded-lg border-2 border-border bg-background text-text focus:outline-none focus:border-primary"
+                  />
+                  <button 
+                    type="submit" 
+                    className="bg-primary text-white p-2 rounded-lg border-2 border-border hover:bg-primary-hover active:scale-95 transition-all"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
+                </form>
+              )}
+
               <div className="flex items-center justify-between gap-2">
                 <button 
                   onClick={toggleMute}
-                  disabled={!isReady}
+                  disabled={!isReady || (!activeVideoId && station.id === "CUSTOM")}
                   className="p-3 bg-background border-2 border-border rounded-xl hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
@@ -121,7 +184,7 @@ export function NeoRadio() {
 
                 <button 
                   onClick={togglePlay}
-                  disabled={!isReady}
+                  disabled={!isReady || (!activeVideoId && station.id === "CUSTOM")}
                   className="p-3 flex-1 flex justify-center bg-primary text-white border-2 border-border rounded-xl hover:bg-primary-hover active:translate-y-1 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <Play className="w-6 h-6 fill-current ml-1" />}
@@ -129,32 +192,26 @@ export function NeoRadio() {
 
                 <button 
                   onClick={nextStation}
-                  disabled={!isReady}
-                  className="p-3 bg-background border-2 border-border rounded-xl hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="p-3 bg-background border-2 border-border rounded-xl hover:bg-primary hover:text-white transition-colors"
                 >
                   <SkipForward className="w-5 h-5 fill-current" />
                 </button>
               </div>
 
-              {/* Status Bar Ala Kaset */}
+              {/* Real-time Status Bar */}
               <div className="mt-4 h-2 w-full bg-border/20 rounded-full overflow-hidden">
-                <motion.div 
-                  className="h-full bg-primary"
-                  animate={{ 
-                    width: isPlaying ? ["0%", "100%"] : "0%"
-                  }}
-                  transition={{ 
-                    duration: 3600, // Simulasi progress 1 jam
-                    repeat: Infinity,
-                    ease: "linear"
-                  }}
+                <div 
+                  className={`h-full ${progress === 100 ? 'bg-green-400 animate-pulse' : 'bg-primary'} transition-all duration-1000 ease-linear`}
+                  style={{ width: `${progress}%` }}
                 />
               </div>
+              <p className="text-[10px] font-bold text-center mt-1 text-muted opacity-70">
+                {progress === 100 ? 'LIVE STREAMING' : `${Math.floor(progress)}% COMPLETED`}
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Tombol Toggle Radio */}
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
