@@ -15,6 +15,7 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
+  const [countdown, setCountdown] = useState<number | null>(null);
   
   // Ref untuk nyimpen state yang dipakai di dalam requestAnimationFrame
   const gameState = useRef({
@@ -62,18 +63,40 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
     setScore(0);
     setGameOver(false);
     setGameStarted(false);
+    setCountdown(null);
+  };
+
+  const startCountdown = () => {
+    setCountdown(3);
+    let currentCount = 3;
+    
+    const countInterval = setInterval(() => {
+      currentCount -= 1;
+      if (currentCount > 0) {
+        setCountdown(currentCount);
+      } else if (currentCount === 0) {
+        setCountdown("GO!" as unknown as number);
+      } else {
+        clearInterval(countInterval);
+        setCountdown(null);
+        gameState.current.isStarted = true;
+        setGameStarted(true);
+        gameState.current.velocity = gameState.current.jumpStrength; // Lompatan awal
+      }
+    }, 1000);
   };
 
   const jump = () => {
+    if (countdown !== null) return; // Blokir input selama hitung mundur
+
     if (gameState.current.isGameOver) {
       resetGame();
-      gameState.current.isStarted = true;
-      setGameStarted(true);
+      startCountdown();
       return;
     }
     if (!gameState.current.isStarted) {
-      gameState.current.isStarted = true;
-      setGameStarted(true);
+      startCountdown();
+      return;
     }
     gameState.current.velocity = gameState.current.jumpStrength;
   };
@@ -240,7 +263,21 @@ export function MascotGame({ isOpen, onClose }: MascotGameProps) {
             className="w-full h-full object-cover"
           />
 
-          {!gameStarted && !gameOver && (
+          {countdown !== null && (
+            <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none bg-black/40 backdrop-blur-sm">
+              <motion.h3 
+                key={countdown}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1.5, opacity: 1 }}
+                exit={{ scale: 0, opacity: 0 }}
+                className="text-8xl font-black text-white drop-shadow-[6px_6px_0_#EF4444]"
+              >
+                {countdown}
+              </motion.h3>
+            </div>
+          )}
+
+          {!gameStarted && !gameOver && countdown === null && (
             <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
               <h3 className="text-4xl md:text-5xl font-black text-white drop-shadow-[4px_4px_0_#1A1A2E] mb-4 text-center">TEKAN SPASI / KLIK</h3>
               <p className="text-white font-bold neo-brutalist-shadow-sm px-4 py-2 bg-primary border-2 border-border rounded-lg">Terbang melewati rintangan!</p>
