@@ -5,26 +5,15 @@ import { Palette } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const THEMES = [
-  { id: "default", name: "DockSidz Default", color: "#111844" },
-  { id: "cyberpunk", name: "Cyberpunk", color: "#22C55E" },
+  { id: "monochrome", name: "Monochrome (Default)", color: "#000000" },
   { id: "retro", name: "Retro Vibe", color: "#DC2626" },
   { id: "midnight", name: "Midnight Hacker", color: "#10B981" },
   { id: "bubblegum", name: "Bubblegum Pop", color: "#EC4899" },
   { id: "solar", name: "Solar Flare", color: "#F59E0B" },
   { id: "ocean", name: "Deep Ocean", color: "#06B6D4" },
   { id: "lavender", name: "Lavender Dream", color: "#8B5CF6" },
-  { id: "synthwave", name: "Synthwave", color: "#D946EF" },
-  { id: "forest", name: "Forest Ranger", color: "#22C55E" },
-  { id: "monochrome", name: "Monochrome", color: "#000000" },
-  { id: "vampire", name: "Vampire", color: "#991B1B" },
   { id: "tokyo", name: "Neon Tokyo", color: "#F43F5E" },
-  { id: "matcha", name: "Matcha Latte", color: "#84CC16" },
   { id: "terminal", name: "Terminal", color: "#4ADE80" },
-  { id: "sunset", name: "Sunset", color: "#F97316" },
-  { id: "arctic", name: "Arctic Ice", color: "#38BDF8" },
-  { id: "halloween", name: "Halloween", color: "#EA580C" },
-  { id: "royal", name: "Royal Gold", color: "#EAB308" },
-  { id: "coffee", name: "Coffee Shop", color: "#D97706" },
 ];
 
 export function ThemeSwitcher() {
