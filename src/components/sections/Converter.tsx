@@ -410,7 +410,7 @@ export function Converter({ fixedTab }: ConverterProps) {
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                   <Button variant="secondary" onClick={handleReset}>Proses Lainnya</Button>
                   
-                  {downloadUrl && downloadName && (
+                  {downloadUrl && downloadName && activeTab !== "pdf-to-word" && (
                     <Button variant="secondary" onClick={handlePreview} className="flex items-center gap-2">
                       <span className="text-xl">👀</span> Pratinjau
                     </Button>
@@ -425,6 +425,12 @@ export function Converter({ fixedTab }: ConverterProps) {
                     </a>
                   )}
                 </div>
+
+                {activeTab === "pdf-to-word" && (
+                  <p className="text-sm text-error/80 font-semibold mt-6 bg-error/10 py-2 px-4 rounded-lg">
+                    *Catatan: Pratinjau tidak tersedia untuk PDF ke Word. Silakan langsung unduh file Anda.
+                  </p>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
