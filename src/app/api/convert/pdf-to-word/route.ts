@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import CloudConvert from "cloudconvert";
-
-const cloudConvert = new CloudConvert(process.env.CLOUDCONVERT_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
-    if (!process.env.CLOUDCONVERT_API_KEY) {
+    const publicKey = process.env.ILOVEPDF_PUBLIC_KEY;
+    if (!publicKey) {
       return NextResponse.json(
-        { error: "API Key CloudConvert belum diatur di server." },
+        { error: "API Key iLovePDF belum diatur di server." },
         { status: 500 }
       );
     }
@@ -19,50 +17,70 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "File tidak ditemukan" }, { status: 400 });
     }
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-
-    // 1. Buat Job di CloudConvert
-    const job = await cloudConvert.jobs.create({
-      tasks: {
-        "import-my-file": {
-          operation: "import/upload",
-        },
-        "convert-my-file": {
-          operation: "convert",
-          input: "import-my-file",
-          output_format: "docx",
-        },
-        "export-my-file": {
-          operation: "export/url",
-          input: "convert-my-file",
-        },
-      },
+    // 1. Dapatkan Token Auth
+    const authRes = await fetch("https://api.ilovepdf.com/v1/auth", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ public_key: publicKey }),
     });
+    const authData = await authRes.json();
+    if (!authRes.ok) throw new Error("Gagal autentikasi iLovePDF API");
+    const token = authData.token;
 
-    // 2. Unggah file
-    const uploadTask = job.tasks.filter((task) => task.name === "import-my-file")[0];
-    await cloudConvert.tasks.upload(uploadTask, buffer, file.name);
+    // 2. Start Task 'pdfword'
+    const startRes = await fetch("https://api.ilovepdf.com/v1/start/pdfword", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const startData = await startRes.json();
+    if (!startRes.ok) throw new Error("Gagal memulai task iLovePDF");
+    const server = startData.server;
+    const task = startData.task;
 
-    // 3. Tunggu proses selesai
-    const completedJob = await cloudConvert.jobs.wait(job.id);
-    const exportTask = completedJob.tasks.filter((task) => task.name === "export-my-file")[0];
+    // 3. Upload File
+    const uploadFormData = new FormData();
+    uploadFormData.append("task", task);
+    uploadFormData.append("file", file);
+    const uploadRes = await fetch(`https://${server}/v1/upload`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: uploadFormData,
+    });
+    const uploadData = await uploadRes.json();
+    if (!uploadRes.ok) throw new Error("Gagal mengunggah file ke iLovePDF");
+    const serverFilename = uploadData.server_filename;
+
+    // 4. Process
+    const processRes = await fetch(`https://${server}/v1/process`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        task: task,
+        tool: "pdfword",
+        files: [
+          {
+            server_filename: serverFilename,
+            filename: file.name,
+          },
+        ],
+      }),
+    });
+    if (!processRes.ok) {
+      const errText = await processRes.text();
+      throw new Error(`Gagal memproses file: ${errText}`);
+    }
+
+    // 5. Download
+    const downloadRes = await fetch(`https://${server}/v1/download/${task}`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!downloadRes.ok) throw new Error("Gagal mengunduh hasil dari iLovePDF");
     
-    if (exportTask.status === "error") {
-      throw new Error(exportTask.message || "Terjadi kesalahan di CloudConvert");
-    }
-
-    const fileUrl = exportTask.result?.files?.[0]?.url;
-    if (!fileUrl) {
-      throw new Error("URL file tidak ditemukan dari hasil konversi.");
-    }
-
-    // 4. Unduh dari CloudConvert dan jadikan buffer agar frontend tetap bisa pakai Blob
-    const fileResponse = await fetch(fileUrl);
-    if (!fileResponse.ok) {
-        throw new Error("Gagal mengambil file yang telah dikonversi");
-    }
-    const finalBuffer = await fileResponse.arrayBuffer();
+    const finalBuffer = await downloadRes.arrayBuffer();
 
     return new NextResponse(finalBuffer, {
       status: 200,
