@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -15,6 +15,39 @@ type Status = "idle" | "uploading" | "converting" | "success" | "error";
 interface ConverterProps {
   fixedTab?: ConversionType;
 }
+
+const DocxViewer = ({ fileUrl, onLoaded }: { fileUrl: string, onLoaded: () => void }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  useEffect(() => {
+    let isMounted = true;
+    const renderDocx = async () => {
+      try {
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+        if (!isMounted || !containerRef.current) return;
+        
+        const docx = await import('docx-preview');
+        await docx.renderAsync(blob, containerRef.current, null, {
+          inWrapper: true,
+          ignoreWidth: false,
+          ignoreHeight: false,
+        });
+        if (isMounted) onLoaded();
+      } catch (e) {
+        console.error("Docx preview error:", e);
+        if (isMounted && containerRef.current) {
+          containerRef.current.innerHTML = "<p class='text-error font-bold p-4'>Gagal memuat pratinjau dokumen DOCX.</p>";
+          onLoaded();
+        }
+      }
+    };
+    renderDocx();
+    return () => { isMounted = false; };
+  }, [fileUrl, onLoaded]);
+
+  return <div ref={containerRef} className="w-full text-black bg-white overflow-auto" />;
+};
 
 export function Converter({ fixedTab }: ConverterProps) {
   const [activeTab, setActiveTab] = useState<ConversionType>(fixedTab || "word-to-pdf");
@@ -199,29 +232,13 @@ export function Converter({ fixedTab }: ConverterProps) {
     setPreviewHtml(null);
   };
 
-  const handlePreview = async () => {
+  const handlePreview = () => {
     if (!downloadUrl || !downloadName) return;
     setShowPreview(true);
     setPreviewLoading(true);
 
-    try {
-      if (downloadName.endsWith('.docx')) {
-        const response = await fetch(downloadUrl);
-        const blob = await response.blob();
-        const arrayBuffer = await blob.arrayBuffer();
-        
-        // Dynamically import mammoth to avoid SSR issues
-        const mammoth = await import('mammoth');
-        const result = await mammoth.convertToHtml({ arrayBuffer });
-        setPreviewHtml(result.value);
-      } else {
-        setPreviewHtml(null);
-      }
-    } catch (e) {
-      console.error("Preview error:", e);
-      setPreviewHtml("<p class='text-error font-bold'>Gagal memuat pratinjau dokumen.</p>");
-    } finally {
-      setPreviewLoading(false);
+    if (downloadName.endsWith('.pdf')) {
+      setTimeout(() => setPreviewLoading(false), 500);
     }
   };
 
@@ -435,24 +452,23 @@ export function Converter({ fixedTab }: ConverterProps) {
                 </button>
               </div>
               
-              <div className="flex-1 overflow-auto p-4 bg-white relative">
-                {previewLoading ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted bg-white">
+              <div className="flex-1 overflow-auto p-4 bg-gray-100 relative">
+                {previewLoading && (
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center text-muted bg-white/80 backdrop-blur-sm">
                     <RefreshCw className="w-12 h-12 animate-spin mb-4 text-primary" />
                     <p className="font-bold">Memuat pratinjau...</p>
                   </div>
-                ) : downloadName?.endsWith('.pdf') ? (
+                )}
+                
+                {downloadName?.endsWith('.pdf') ? (
                   <iframe 
                     src={`${downloadUrl}#toolbar=0`} 
-                    className="w-full h-full border-none rounded-lg"
+                    className="w-full h-full border-none rounded-lg bg-white"
                     title="PDF Preview"
                   />
-                ) : (
-                  <div 
-                    className="prose prose-sm sm:prose-base max-w-none text-black p-4 sm:p-8"
-                    dangerouslySetInnerHTML={{ __html: previewHtml || '' }}
-                  />
-                )}
+                ) : downloadName?.endsWith('.docx') ? (
+                  <DocxViewer fileUrl={downloadUrl} onLoaded={() => setPreviewLoading(false)} />
+                ) : null}
               </div>
             </motion.div>
           </motion.div>
