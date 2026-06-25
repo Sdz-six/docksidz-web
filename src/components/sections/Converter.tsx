@@ -28,7 +28,7 @@ const DocxViewer = ({ fileUrl, onLoaded }: { fileUrl: string, onLoaded: () => vo
         if (!isMounted || !containerRef.current) return;
         
         const docx = await import('docx-preview');
-        await docx.renderAsync(blob, containerRef.current, null, {
+        await docx.renderAsync(blob, containerRef.current, containerRef.current, {
           inWrapper: true,
           ignoreWidth: false,
           ignoreHeight: false,
