@@ -24,6 +24,9 @@ export function Converter({ fixedTab }: ConverterProps) {
   const [errorMsg, setErrorMsg] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [downloadName, setDownloadName] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
 
   // Parallax 3D Effect variables
   const mouseX = useMotionValue(0);
@@ -192,6 +195,34 @@ export function Converter({ fixedTab }: ConverterProps) {
       window.URL.revokeObjectURL(downloadUrl);
       setDownloadUrl(null);
     }
+    setShowPreview(false);
+    setPreviewHtml(null);
+  };
+
+  const handlePreview = async () => {
+    if (!downloadUrl || !downloadName) return;
+    setShowPreview(true);
+    setPreviewLoading(true);
+
+    try {
+      if (downloadName.endsWith('.docx')) {
+        const response = await fetch(downloadUrl);
+        const blob = await response.blob();
+        const arrayBuffer = await blob.arrayBuffer();
+        
+        // Dynamically import mammoth to avoid SSR issues
+        const mammoth = await import('mammoth');
+        const result = await mammoth.convertToHtml({ arrayBuffer });
+        setPreviewHtml(result.value);
+      } else {
+        setPreviewHtml(null);
+      }
+    } catch (e) {
+      console.error("Preview error:", e);
+      setPreviewHtml("<p class='text-error font-bold'>Gagal memuat pratinjau dokumen.</p>");
+    } finally {
+      setPreviewLoading(false);
+    }
   };
 
   const removeFile = (index: number) => {
@@ -353,8 +384,15 @@ export function Converter({ fixedTab }: ConverterProps) {
                 <h3 className="text-3xl font-bold mb-2">Proses Selesai!</h3>
                 <p className="text-muted mb-8">File Anda telah selesai diproses dan siap untuk diunduh.</p>
                 
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
                   <Button variant="outline" onClick={handleReset}>Proses Lainnya</Button>
+                  
+                  {downloadUrl && downloadName && (
+                    <Button onClick={handlePreview} className="bg-secondary hover:bg-secondary/90 text-surface flex items-center gap-2">
+                      <span className="text-xl">👀</span> Lihat Pratinjau
+                    </Button>
+                  )}
+
                   {downloadUrl && downloadName && (
                     <a href={downloadUrl} download={downloadName}>
                       <Button className="px-8 flex items-center gap-2">
@@ -369,6 +407,57 @@ export function Converter({ fixedTab }: ConverterProps) {
           </AnimatePresence>
         </motion.div>
       </div>
+
+      {/* Preview Modal */}
+      <AnimatePresence>
+        {showPreview && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-surface border-4 border-border rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col neo-brutalist-shadow overflow-hidden"
+            >
+              <div className="flex justify-between items-center p-4 border-b-4 border-border bg-primary text-white">
+                <h3 className="font-bold text-xl flex items-center gap-2">
+                  <span className="text-2xl">👀</span> Pratinjau Dokumen
+                </h3>
+                <button 
+                  onClick={() => setShowPreview(false)}
+                  className="bg-error text-white w-10 h-10 rounded-full font-bold border-2 border-border hover:bg-error/80 transition-colors"
+                >
+                  X
+                </button>
+              </div>
+              
+              <div className="flex-1 overflow-auto p-4 bg-white relative">
+                {previewLoading ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-muted bg-white">
+                    <RefreshCw className="w-12 h-12 animate-spin mb-4 text-primary" />
+                    <p className="font-bold">Memuat pratinjau...</p>
+                  </div>
+                ) : downloadName?.endsWith('.pdf') ? (
+                  <iframe 
+                    src={`${downloadUrl}#toolbar=0`} 
+                    className="w-full h-full border-none rounded-lg"
+                    title="PDF Preview"
+                  />
+                ) : (
+                  <div 
+                    className="prose prose-sm sm:prose-base max-w-none text-black p-4 sm:p-8"
+                    dangerouslySetInnerHTML={{ __html: previewHtml || '' }}
+                  />
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
