@@ -385,11 +385,11 @@ export function Converter({ fixedTab }: ConverterProps) {
                 <p className="text-muted mb-8">File Anda telah selesai diproses dan siap untuk diunduh.</p>
                 
                 <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-                  <Button variant="outline" onClick={handleReset}>Proses Lainnya</Button>
+                  <Button variant="secondary" onClick={handleReset}>Proses Lainnya</Button>
                   
                   {downloadUrl && downloadName && (
-                    <Button onClick={handlePreview} className="bg-secondary hover:bg-secondary/90 text-surface flex items-center gap-2">
-                      <span className="text-xl">👀</span> Lihat Pratinjau
+                    <Button variant="secondary" onClick={handlePreview} className="flex items-center gap-2">
+                      <span className="text-xl">👀</span> Pratinjau
                     </Button>
                   )}
 
