@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import CloudConvert from "cloudconvert";
 
 export async function POST(req: NextRequest) {
   try {
-    const publicKey = process.env.ILOVEPDF_PUBLIC_KEY;
-    if (!publicKey) {
+    const apiKey = process.env.CLOUDCONVERT_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
-        { error: "API Key iLovePDF belum diatur di server." },
+        { error: "API Key CloudConvert belum diatur di server." },
         { status: 500 }
       );
     }
@@ -17,69 +18,47 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "File tidak ditemukan" }, { status: 400 });
     }
 
-    // 1. Dapatkan Token Auth
-    const authRes = await fetch("https://api.ilovepdf.com/v1/auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ public_key: publicKey }),
-    });
-    const authData = await authRes.json();
-    if (!authRes.ok) throw new Error("Gagal autentikasi iLovePDF API");
-    const token = authData.token;
+    const cloudConvert = new CloudConvert(apiKey);
 
-    // 2. Start Task 'pdfword'
-    const startRes = await fetch("https://api.ilovepdf.com/v1/start/pdfword", {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
+    // 1. Buat Job CloudConvert
+    let job = await cloudConvert.jobs.create({
+      tasks: {
+        "import-my-file": {
+          operation: "import/upload"
+        },
+        "convert-my-file": {
+          operation: "convert",
+          input: "import-my-file",
+          output_format: "docx"
+        },
+        "export-my-file": {
+          operation: "export/url",
+          input: "convert-my-file"
+        }
+      }
     });
-    const startData = await startRes.json();
-    if (!startRes.ok) throw new Error("Gagal memulai task iLovePDF");
-    const server = startData.server;
-    const task = startData.task;
 
-    // 3. Upload File
-    const uploadFormData = new FormData();
-    uploadFormData.append("task", task);
-    uploadFormData.append("file", file);
-    const uploadRes = await fetch(`https://${server}/v1/upload`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: uploadFormData,
-    });
-    const uploadData = await uploadRes.json();
-    if (!uploadRes.ok) throw new Error("Gagal mengunggah file ke iLovePDF");
-    const serverFilename = uploadData.server_filename;
+    // 2. Upload file ke CloudConvert
+    const uploadTask = job.tasks.find(t => t.name === "import-my-file");
+    if (!uploadTask) throw new Error("Gagal membuat task upload");
+    
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    await cloudConvert.tasks.upload(uploadTask, buffer, file.name);
 
-    // 4. Process
-    const processRes = await fetch(`https://${server}/v1/process`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        task: task,
-        tool: "pdfword",
-        files: [
-          {
-            server_filename: serverFilename,
-            filename: file.name,
-          },
-        ],
-      }),
-    });
-    if (!processRes.ok) {
-      const errText = await processRes.text();
-      throw new Error(`Gagal memproses file: ${errText}`);
+    // 3. Tunggu hingga Job selesai
+    job = await cloudConvert.jobs.wait(job.id);
+
+    // 4. Ambil hasil file
+    const exportTask = job.tasks.find(t => t.name === "export-my-file");
+    if (!exportTask || exportTask.status !== "finished") {
+      throw new Error("Gagal menyelesaikan konversi di server CloudConvert");
     }
 
-    // 5. Download
-    const downloadRes = await fetch(`https://${server}/v1/download/${task}`, {
-      method: "GET",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!downloadRes.ok) throw new Error("Gagal mengunduh hasil dari iLovePDF");
-    
+    const fileUrl = exportTask.result.files[0].url;
+
+    // 5. Download hasil dari CloudConvert untuk dikirim ke user
+    const downloadRes = await fetch(fileUrl);
     const finalBuffer = await downloadRes.arrayBuffer();
 
     return new NextResponse(finalBuffer, {
@@ -90,7 +69,7 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    console.error("Error during pdf to word conversion:", error);
+    console.error("Error during pdf to word conversion (CloudConvert):", error);
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
