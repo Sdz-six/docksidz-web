@@ -70,6 +70,8 @@ export async function POST(req: NextRequest) {
       headers: {
         "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "Content-Disposition": `attachment; filename="converted.docx"`,
+        "X-Public-Url": fileUrl,
+        "Access-Control-Expose-Headers": "X-Public-Url",
       },
     });
   } catch (error: any) {

@@ -57,8 +57,8 @@ export function Converter({ fixedTab }: ConverterProps) {
   const [errorMsg, setErrorMsg] = useState("");
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [downloadName, setDownloadName] = useState<string | null>(null);
+  const [publicUrl, setPublicUrl] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
-  const [previewHtml, setPreviewHtml] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
 
   // Parallax 3D Effect variables
@@ -160,9 +160,11 @@ export function Converter({ fixedTab }: ConverterProps) {
 
       setProgress(80);
       
+      const cloudConvertUrl = response.headers.get("X-Public-Url");
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       setDownloadUrl(url);
+      setPublicUrl(cloudConvertUrl);
       
       let newName = "Converted_File.pdf";
       let typeName = "Konversi";
@@ -229,7 +231,7 @@ export function Converter({ fixedTab }: ConverterProps) {
       setDownloadUrl(null);
     }
     setShowPreview(false);
-    setPreviewHtml(null);
+    setPublicUrl(null);
   };
 
   const handlePreview = () => {
@@ -239,6 +241,10 @@ export function Converter({ fixedTab }: ConverterProps) {
 
     if (downloadName.endsWith('.pdf')) {
       setTimeout(() => setPreviewLoading(false), 500);
+    } else if (downloadName.endsWith('.docx') && publicUrl) {
+      setTimeout(() => setPreviewLoading(false), 1000);
+    } else {
+      setPreviewLoading(false);
     }
   };
 
@@ -465,6 +471,13 @@ export function Converter({ fixedTab }: ConverterProps) {
                     src={`${downloadUrl}#toolbar=0`} 
                     className="w-full h-full border-none rounded-lg bg-white"
                     title="PDF Preview"
+                  />
+                ) : downloadName?.endsWith('.docx') && publicUrl ? (
+                  <iframe 
+                    src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(publicUrl)}`} 
+                    className="w-full h-full border-none rounded-lg bg-white"
+                    title="Word Preview"
+                    onLoad={() => setPreviewLoading(false)}
                   />
                 ) : downloadName?.endsWith('.docx') ? (
                   <DocxViewer fileUrl={downloadUrl!} onLoaded={() => setPreviewLoading(false)} />
