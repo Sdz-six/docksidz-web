@@ -55,7 +55,11 @@ export async function POST(req: NextRequest) {
       throw new Error("Gagal menyelesaikan konversi di server CloudConvert");
     }
 
-    const fileUrl = exportTask.result.files[0].url;
+    const fileUrl = exportTask.result?.files?.[0]?.url;
+
+    if (!fileUrl) {
+      throw new Error("URL hasil unduhan tidak ditemukan di respons CloudConvert.");
+    }
 
     // 5. Download hasil dari CloudConvert untuk dikirim ke user
     const downloadRes = await fetch(fileUrl);
