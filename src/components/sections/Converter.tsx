@@ -467,7 +467,7 @@ export function Converter({ fixedTab }: ConverterProps) {
                     title="PDF Preview"
                   />
                 ) : downloadName?.endsWith('.docx') ? (
-                  <DocxViewer fileUrl={downloadUrl} onLoaded={() => setPreviewLoading(false)} />
+                  <DocxViewer fileUrl={downloadUrl!} onLoaded={() => setPreviewLoading(false)} />
                 ) : null}
               </div>
             </motion.div>
