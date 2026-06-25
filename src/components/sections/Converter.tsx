@@ -415,13 +415,13 @@ export function Converter({ fixedTab }: ConverterProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] flex items-center justify-center p-6 pt-24 md:p-10 md:pt-32 bg-background/80 backdrop-blur-sm"
           >
             <motion.div 
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.9, y: 20 }}
-              className="bg-surface border-4 border-border rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col neo-brutalist-shadow overflow-hidden"
+              className="bg-surface border-4 border-border rounded-2xl w-full max-w-5xl max-h-[75vh] h-full flex flex-col neo-brutalist-shadow overflow-hidden"
             >
               <div className="flex justify-between items-center p-4 border-b-4 border-border bg-primary text-white">
                 <h3 className="font-bold text-xl flex items-center gap-2">
