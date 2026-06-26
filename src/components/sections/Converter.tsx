@@ -412,7 +412,7 @@ export function Converter({ fixedTab }: ConverterProps) {
                   
                   {downloadUrl && downloadName && activeTab !== "pdf-to-word" && (
                     <Button variant="secondary" onClick={handlePreview} className="flex items-center gap-2">
-                      <span className="text-xl">👀</span> Pratinjau
+                      Pratinjau
                     </Button>
                   )}
 
@@ -454,7 +454,7 @@ export function Converter({ fixedTab }: ConverterProps) {
             >
               <div className="flex justify-between items-center p-4 border-b-4 border-border bg-primary text-white">
                 <h3 className="font-bold text-xl flex items-center gap-2">
-                  <span className="text-2xl">👀</span> Pratinjau Dokumen
+                  Pratinjau Dokumen
                 </h3>
                 <button 
                   onClick={() => setShowPreview(false)}
