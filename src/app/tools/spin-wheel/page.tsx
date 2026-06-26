@@ -48,8 +48,25 @@ export default function SpinWheelPage() {
 
     setTimeout(() => {
       setIsSpinning(false);
-      setWinner(segments[randomSegmentIndex]);
+      const won = segments[randomSegmentIndex];
+      setWinner(won);
       fireConfetti();
+
+      // Simpan ke riwayat
+      try {
+        const historyData = localStorage.getItem("docksidz_history");
+        const history = historyData ? JSON.parse(historyData) : [];
+        history.push({ 
+          id: Date.now().toString(), 
+          name: `Pemenang: ${won}`, 
+          type: "Spin Wheel", 
+          url: "", 
+          timestamp: Date.now() 
+        });
+        localStorage.setItem("docksidz_history", JSON.stringify(history));
+        window.dispatchEvent(new Event("history-updated"));
+      } catch (e) {}
+
     }, 5000); 
   };
 

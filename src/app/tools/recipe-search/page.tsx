@@ -66,6 +66,15 @@ export default function RecipeSearchPage() {
         // Gunakan timeout kecil untuk efek simulasi pencarian
         await new Promise((resolve) => setTimeout(resolve, 500));
         setRecipes(localMatches.map((m) => ({ ...m, isTranslating: false })));
+        
+        try {
+          const historyData = localStorage.getItem("docksidz_history");
+          const history = historyData ? JSON.parse(historyData) : [];
+          history.push({ id: Date.now().toString(), name: `Mencari Resep Lokal: ${query}`, type: "Pencarian Resep", url: "", timestamp: Date.now() });
+          localStorage.setItem("docksidz_history", JSON.stringify(history));
+          window.dispatchEvent(new Event("history-updated"));
+        } catch (e) {}
+
         setLoading(false);
         setTranslateStatus(null);
         return;
@@ -81,6 +90,13 @@ export default function RecipeSearchPage() {
 
       if (data.meals) {
         setRecipes(data.meals.map((m: any) => ({ ...m, isTranslating: false })));
+        try {
+          const historyData = localStorage.getItem("docksidz_history");
+          const history = historyData ? JSON.parse(historyData) : [];
+          history.push({ id: Date.now().toString(), name: `Mencari Resep: ${translatedQuery}`, type: "Pencarian Resep", url: "", timestamp: Date.now() });
+          localStorage.setItem("docksidz_history", JSON.stringify(history));
+          window.dispatchEvent(new Event("history-updated"));
+        } catch (e) {}
       } else {
         // Coba cari tanpa terjemahan (siapa tahu pengguna mengetik masakan spesifik seperti "Nasi Goreng")
         const retryResponse = await fetch(`https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(query)}`);
@@ -88,6 +104,13 @@ export default function RecipeSearchPage() {
         
         if (retryData.meals) {
           setRecipes(retryData.meals.map((m: any) => ({ ...m, isTranslating: false })));
+          try {
+            const historyData = localStorage.getItem("docksidz_history");
+            const history = historyData ? JSON.parse(historyData) : [];
+            history.push({ id: Date.now().toString(), name: `Mencari Resep: ${query}`, type: "Pencarian Resep", url: "", timestamp: Date.now() });
+            localStorage.setItem("docksidz_history", JSON.stringify(history));
+            window.dispatchEvent(new Event("history-updated"));
+          } catch (e) {}
         } else {
           setError(`Tidak ditemukan resep untuk "${query}". Coba kata kunci atau bahan lain.`);
         }

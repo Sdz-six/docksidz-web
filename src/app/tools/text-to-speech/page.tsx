@@ -63,6 +63,21 @@ export default function TextToSpeechPage() {
     };
 
     window.speechSynthesis.speak(utterance);
+    
+    // Simpan ke riwayat
+    try {
+      const historyData = localStorage.getItem("docksidz_history");
+      const history = historyData ? JSON.parse(historyData) : [];
+      history.push({ 
+        id: Date.now().toString(), 
+        name: text.substring(0, 30) + (text.length > 30 ? "..." : ""), 
+        type: "Text to Speech", 
+        url: "", 
+        timestamp: Date.now() 
+      });
+      localStorage.setItem("docksidz_history", JSON.stringify(history));
+      window.dispatchEvent(new Event("history-updated"));
+    } catch (e) {}
   };
 
   const handleStop = () => {

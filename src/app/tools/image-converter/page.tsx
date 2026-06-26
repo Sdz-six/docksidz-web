@@ -78,6 +78,21 @@ export default function ImageConverterPage() {
       // Ekstrak nama ekstensi untuk didownload
       const ext = targetFormat === "image/jpeg" ? "jpg" : targetFormat === "image/png" ? "png" : "webp";
       setConvertedExt(ext);
+
+      // Simpan ke riwayat
+      try {
+        const historyData = localStorage.getItem("docksidz_history");
+        const history = historyData ? JSON.parse(historyData) : [];
+        history.push({
+          id: Date.now().toString(),
+          name: file.name,
+          type: `Konversi ke ${ext.toUpperCase()}`,
+          url: "", // Tautan lokal canvas tidak persisten
+          timestamp: Date.now()
+        });
+        localStorage.setItem("docksidz_history", JSON.stringify(history));
+        window.dispatchEvent(new Event("history-updated"));
+      } catch (e) {}
     } catch (err) {
       console.error("Gagal mengonversi gambar", err);
       alert("Gagal mengonversi gambar.");

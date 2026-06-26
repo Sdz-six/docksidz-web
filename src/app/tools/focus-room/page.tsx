@@ -32,6 +32,22 @@ export default function FocusRoomPage() {
         const audio = new Audio('/notification.mp3'); // We might not have this, but standard practice
         audio.play().catch(() => {});
       } catch (e) {}
+
+      // Simpan riwayat sesi
+      try {
+        const historyData = localStorage.getItem("docksidz_history");
+        const history = historyData ? JSON.parse(historyData) : [];
+        const activityName = mode === "focus" ? "Sesi Fokus Selesai (25m)" : "Waktu Istirahat Selesai (5m)";
+        history.push({ 
+          id: Date.now().toString(), 
+          name: activityName, 
+          type: "Ruang Fokus", 
+          url: "", 
+          timestamp: Date.now() 
+        });
+        localStorage.setItem("docksidz_history", JSON.stringify(history));
+        window.dispatchEvent(new Event("history-updated"));
+      } catch (e) {}
       
       setIsActive(false);
       if (mode === "focus") {

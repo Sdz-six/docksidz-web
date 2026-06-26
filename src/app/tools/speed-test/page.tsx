@@ -1,9 +1,26 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Wifi } from "lucide-react";
 
 export default function SpeedTestPage() {
+  useEffect(() => {
+    try {
+      const historyData = localStorage.getItem("docksidz_history");
+      const history = historyData ? JSON.parse(historyData) : [];
+      // Hindari duplikasi log jika di-refresh berdekatan (opsional, tapi kita simpan saja)
+      history.push({ 
+        id: Date.now().toString(), 
+        name: "Menguji Kecepatan Jaringan", 
+        type: "Speed Test", 
+        url: "", 
+        timestamp: Date.now() 
+      });
+      localStorage.setItem("docksidz_history", JSON.stringify(history));
+      window.dispatchEvent(new Event("history-updated"));
+    } catch (e) {}
+  }, []);
   return (
     <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
       <Link href="/#tools" className="inline-flex items-center text-muted hover:text-primary mb-8 font-bold neo-brutalist-shadow-sm bg-surface px-4 py-2 rounded-xl border-2 border-border transition-all hover:translate-y-[-2px]">

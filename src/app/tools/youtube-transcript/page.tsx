@@ -32,6 +32,21 @@ export default function YoutubeTranscriptPage() {
 
       if (data.status === true && data.result?.transcript) {
         setTranscript(data.result.transcript);
+
+        // Simpan ke riwayat
+        try {
+          const historyData = localStorage.getItem("docksidz_history");
+          const history = historyData ? JSON.parse(historyData) : [];
+          history.push({ 
+            id: Date.now().toString(), 
+            name: `Transkrip YouTube`, 
+            type: "YouTube Transcript", 
+            url: url, // Bisa kita simpan URL youtube-nya
+            timestamp: Date.now() 
+          });
+          localStorage.setItem("docksidz_history", JSON.stringify(history));
+          window.dispatchEvent(new Event("history-updated"));
+        } catch (e) {}
       } else {
         throw new Error("Transkrip tidak ditemukan untuk video ini.");
       }

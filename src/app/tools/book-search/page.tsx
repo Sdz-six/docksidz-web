@@ -79,6 +79,14 @@ export default function BookSearchPage() {
         const data = await response.json();
         if (data.docs && data.docs.length > 0) {
           setBooks(data.docs.map((d: any) => ({ ...d, loadingSynopsis: false })));
+          
+          try {
+            const historyData = localStorage.getItem("docksidz_history");
+            const history = historyData ? JSON.parse(historyData) : [];
+            history.push({ id: Date.now().toString(), name: `Mencari Buku: ${query}`, type: "Pencarian Buku", url: "", timestamp: Date.now() });
+            localStorage.setItem("docksidz_history", JSON.stringify(history));
+            window.dispatchEvent(new Event("history-updated"));
+          } catch (e) {}
         } else {
           setError(`Tidak ditemukan buku dengan judul "${query}".`);
         }
@@ -87,6 +95,14 @@ export default function BookSearchPage() {
         const data = await response.json();
         if (data.data && data.data.length > 0) {
           setMangas(data.data.map((m: any) => ({ ...m, isTranslating: false })));
+          
+          try {
+            const historyData = localStorage.getItem("docksidz_history");
+            const history = historyData ? JSON.parse(historyData) : [];
+            history.push({ id: Date.now().toString(), name: `Mencari Manga: ${query}`, type: "Pencarian Manga", url: "", timestamp: Date.now() });
+            localStorage.setItem("docksidz_history", JSON.stringify(history));
+            window.dispatchEvent(new Event("history-updated"));
+          } catch (e) {}
         } else {
           setError(`Tidak ditemukan manga/komik dengan judul "${query}".`);
         }

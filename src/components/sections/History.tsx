@@ -58,14 +58,16 @@ export function History() {
 
           <div className="space-y-2 sm:space-y-4">
             {history.sort((a, b) => b.timestamp - a.timestamp).map((item) => {
-              const documentToolTypes = [
+              const toolsWithDownload = [
                 "Word ke PDF",
                 "PDF ke Word",
                 "Gambar ke PDF",
                 "Office ke PDF",
-                "Gabung PDF"
+                "Gabung PDF",
+                "Video YouTube",
+                "Video TikTok"
               ];
-              const isDocumentTool = documentToolTypes.includes(item.type);
+              const hasDownload = toolsWithDownload.includes(item.type);
 
               return (
                 <div key={item.id} className="flex flex-row items-center justify-between bg-background p-2 sm:p-4 rounded-lg sm:rounded-xl border-2 border-border gap-2 sm:gap-4">
@@ -80,7 +82,7 @@ export function History() {
                       </p>
                     </div>
                   </div>
-                  {isDocumentTool && (
+                  {hasDownload && item.url && (
                     <a href={item.url} download={item.name} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 cursor-pointer">
                       <Button variant="primary" className="w-8 h-8 sm:h-auto sm:w-auto sm:px-4 p-0 flex items-center justify-center rounded-md sm:rounded-lg">
                         <Download className="w-4 h-4 sm:mr-2" />

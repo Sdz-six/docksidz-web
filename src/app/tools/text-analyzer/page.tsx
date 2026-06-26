@@ -98,6 +98,23 @@ export default function TextAnalyzerPage() {
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
+            onBlur={() => {
+              if(text.trim().length > 10) {
+                try {
+                  const historyData = localStorage.getItem("docksidz_history");
+                  const history = historyData ? JSON.parse(historyData) : [];
+                  history.push({ 
+                    id: Date.now().toString(), 
+                    name: text.substring(0, 30) + (text.length > 30 ? "..." : ""), 
+                    type: "Text Analyzer", 
+                    url: "", 
+                    timestamp: Date.now() 
+                  });
+                  localStorage.setItem("docksidz_history", JSON.stringify(history));
+                  window.dispatchEvent(new Event("history-updated"));
+                } catch (e) {}
+              }
+            }}
             placeholder="Tempel artikel atau esai Anda di sini untuk dianalisa secara instan..."
             className="w-full flex-grow min-h-[400px] bg-background border-4 border-border rounded-2xl p-6 text-lg font-medium focus:outline-none focus:ring-4 focus:ring-primary/20 neo-brutalist-shadow-sm resize-none custom-scrollbar"
           ></textarea>

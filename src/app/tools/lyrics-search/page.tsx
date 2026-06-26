@@ -46,6 +46,21 @@ export default function LyricsSearchPage() {
 
       if (data.status === true && data.result) {
         setResult(data.result);
+        
+        // Simpan ke riwayat
+        try {
+          const historyData = localStorage.getItem("docksidz_history");
+          const history = historyData ? JSON.parse(historyData) : [];
+          history.push({
+            id: Date.now().toString(),
+            name: `${data.result.title} - ${data.result.artist}`,
+            type: "Pencarian Lirik",
+            url: "", 
+            timestamp: Date.now()
+          });
+          localStorage.setItem("docksidz_history", JSON.stringify(history));
+          window.dispatchEvent(new Event("history-updated"));
+        } catch (e) {}
       } else {
         throw new Error("Lagu tidak ditemukan atau respons API tidak valid.");
       }
