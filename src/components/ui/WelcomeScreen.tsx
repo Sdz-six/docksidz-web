@@ -115,7 +115,7 @@ export function WelcomeScreen() {
             </h1>
             
             <p className="text-xl md:text-2xl text-muted mb-10 font-medium">
-              Berhenti muter-muter nyari tools di luar sana. DockSidz and Tools adalah rumah buat segala utilitas digitalmu. Cepat, instan, dan dirancang dengan warna-warni berani yang siap ngebakar semangat produktivitasmu hari ini. 🎨✨
+              Rumah bagi segala utilitas digitalmu. Cepat, instan, tanpa ribet. Tingkatkan produktivitasmu sekarang! 🚀✨
             </p>
             
             <motion.div
