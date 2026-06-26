@@ -115,7 +115,7 @@ export function WelcomeScreen() {
             </h1>
             
             <p className="text-xl md:text-2xl text-muted mb-10 font-medium">
-              Rumah bagi segala utilitas digitalmu. Cepat, instan, tanpa ribet. Tingkatkan produktivitasmu sekarang! 🚀✨
+              Satu platform, puluhan alat. Selesaikan tugas digitalmu dalam hitungan detik tanpa ribet. ⚡
             </p>
             
             <motion.div
