@@ -130,10 +130,10 @@ export function WelcomeScreen() {
             <div>
               <button 
                 onClick={handleEnter} 
-                className="rounded-2xl border-2 border-dashed border-text bg-surface px-10 py-6 h-auto text-xl font-semibold flex items-center justify-center gap-3 mx-auto uppercase text-text transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] dark:hover:shadow-[4px_4px_0px_white] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none"
+                className="group rounded-2xl border-2 border-dashed border-text bg-surface px-10 py-6 h-auto text-xl font-semibold flex items-center justify-center gap-3 mx-auto uppercase text-text transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:rounded-md hover:shadow-[4px_4px_0px_#000000] dark:hover:shadow-[4px_4px_0px_#ffffff] active:translate-x-0 active:translate-y-0 active:rounded-2xl active:shadow-none"
               >
                 Masuk ke Aplikasi
-                <ArrowRight className="w-6 h-6" />
+                <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
           </motion.div>
