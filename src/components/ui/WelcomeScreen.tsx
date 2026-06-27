@@ -127,15 +127,15 @@ export function WelcomeScreen() {
               Satu platform, puluhan alat. Selesaikan tugas digitalmu dalam hitungan detik tanpa ribet. ⚡
             </p>
             
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button onClick={handleEnter} size="lg" className="text-xl px-10 py-6 h-auto neo-brutalist-shadow border-4 border-border rounded-2xl flex items-center gap-3 mx-auto">
+            <div>
+              <button 
+                onClick={handleEnter} 
+                className="rounded-2xl border-2 border-dashed border-text bg-surface px-10 py-6 h-auto text-xl font-semibold flex items-center justify-center gap-3 mx-auto uppercase text-text transition-all duration-300 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:rounded-md hover:shadow-[4px_4px_0px_black] dark:hover:shadow-[4px_4px_0px_white] active:translate-x-[0px] active:translate-y-[0px] active:rounded-2xl active:shadow-none"
+              >
                 Masuk ke Aplikasi
                 <ArrowRight className="w-6 h-6" />
-              </Button>
-            </motion.div>
+              </button>
+            </div>
           </motion.div>
         </motion.div>
       )}
