@@ -13,6 +13,7 @@ import { CustomCursor } from "@/components/ui/CustomCursor";
 import { FastRain } from "@/components/ui/FastRain";
 import { Mascot } from "@/components/ui/Mascot";
 import { NeoRadio } from "@/components/ui/NeoRadio";
+import { Analytics } from "@vercel/analytics/react";
 
 export const viewport: Viewport = {
   themeColor: "#111844",
@@ -46,6 +47,7 @@ export default function RootLayout({
         <Mascot />
         <NeoRadio />
         {children}
+        <Analytics />
       </body>
     </html>
   );
