@@ -4,9 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { FileCode2, ArrowRight } from "lucide-react";
-import { PixelatedImageTrail } from "@/components/ui/PixelatedImageTrail";
 import { Button } from "@/components/ui/Button";
-
 
 export function WelcomeScreen() {
   const [isVisible, setIsVisible] = useState(true);
@@ -92,15 +90,8 @@ export function WelcomeScreen() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background overflow-hidden"
         >
-          <div className="hidden md:block absolute inset-0 pointer-events-none">
-            <PixelatedImageTrail 
-              images={["/icons/icon-512x512.png"]}
-              imageSize={100}
-            />
-          </div>
-
           {/* Latar Belakang Animasi Pattern */}
-          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ 
+          <div className="absolute inset-0 opacity-10" style={{ 
             backgroundImage: "radial-gradient(#EAE0CF 2px, transparent 2px)", 
             backgroundSize: "30px 30px" 
           }}></div>
@@ -127,15 +118,15 @@ export function WelcomeScreen() {
               Satu platform, puluhan alat. Selesaikan tugas digitalmu dalam hitungan detik tanpa ribet. ⚡
             </p>
             
-            <div>
-              <button 
-                onClick={handleEnter} 
-                className="group rounded-2xl border-2 border-dashed border-black dark:border-white bg-black px-10 py-6 h-auto text-xl font-semibold flex items-center justify-center gap-3 mx-auto uppercase text-white transition-all duration-300 hover:-translate-x-1 hover:-translate-y-1 hover:rounded-md hover:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] dark:hover:shadow-[4px_4px_0px_#ffffff] active:translate-x-0 active:translate-y-0 active:rounded-2xl active:shadow-none"
-              >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button onClick={handleEnter} size="lg" className="text-xl px-10 py-6 h-auto neo-brutalist-shadow border-4 border-border rounded-2xl flex items-center gap-3 mx-auto">
                 Masuk ke Aplikasi
-                <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
-              </button>
-            </div>
+                <ArrowRight className="w-6 h-6" />
+              </Button>
+            </motion.div>
           </motion.div>
         </motion.div>
       )}
