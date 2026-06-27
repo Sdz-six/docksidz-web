@@ -94,7 +94,7 @@ export function WelcomeScreen() {
         >
           <div className="hidden md:block absolute inset-0 pointer-events-none">
             <PixelatedImageTrail 
-              images={["/mascot.png", "/mascot2.png", "/mascot3.png", "/mascot4.png", "/mascot5.png"]}
+              images={["/icons/icon-512x512.png"]}
               imageSize={100}
             />
           </div>
