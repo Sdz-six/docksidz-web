@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
 import { FileCode2, ArrowRight } from "lucide-react";
+import { PixelatedImageTrail } from "@/components/ui/PixelatedImageTrail";
 import { Button } from "@/components/ui/Button";
+
 
 export function WelcomeScreen() {
   const [isVisible, setIsVisible] = useState(true);
@@ -90,8 +92,12 @@ export function WelcomeScreen() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background overflow-hidden"
         >
+          <PixelatedImageTrail 
+            images={["/mascot.png", "/mascot2.png", "/mascot3.png", "/mascot4.png", "/mascot5.png"]}
+          />
+
           {/* Latar Belakang Animasi Pattern */}
-          <div className="absolute inset-0 opacity-10" style={{ 
+          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ 
             backgroundImage: "radial-gradient(#EAE0CF 2px, transparent 2px)", 
             backgroundSize: "30px 30px" 
           }}></div>
