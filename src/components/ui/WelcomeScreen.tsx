@@ -92,9 +92,12 @@ export function WelcomeScreen() {
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background overflow-hidden"
         >
-          <PixelatedImageTrail 
-            images={["/mascot.png", "/mascot2.png", "/mascot3.png", "/mascot4.png", "/mascot5.png"]}
-          />
+          <div className="hidden md:block absolute inset-0 pointer-events-none">
+            <PixelatedImageTrail 
+              images={["/mascot.png", "/mascot2.png", "/mascot3.png", "/mascot4.png", "/mascot5.png"]}
+              imageSize={100}
+            />
+          </div>
 
           {/* Latar Belakang Animasi Pattern */}
           <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ 
