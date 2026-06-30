@@ -90,6 +90,7 @@ export function WelcomeScreen() {
           exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background overflow-hidden"
+        >
           {/* Animasi Kelelawar Pixel Art (CodeTap) */}
           <div className="absolute top-[20%] left-[30%] z-10 pointer-events-none opacity-80" style={{ animation: 'floatBat 6s ease-in-out infinite' }}>
             <div className="bat"></div>
