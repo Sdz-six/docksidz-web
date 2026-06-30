@@ -1,5 +1,6 @@
 "use client";
 
+import "../../bat-animation.css";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import confetti from "canvas-confetti";
@@ -89,7 +90,21 @@ export function WelcomeScreen() {
           exit={{ opacity: 0, scale: 1.1, filter: "blur(10px)" }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
           className="fixed inset-0 z-[100] flex items-center justify-center bg-background overflow-hidden"
-        >
+          {/* Animasi Kelelawar Pixel Art (CodeTap) */}
+          <div className="absolute top-[20%] left-[30%] z-10 pointer-events-none opacity-80" style={{ animation: 'floatBat 6s ease-in-out infinite' }}>
+            <div className="bat"></div>
+          </div>
+          <div className="absolute top-[40%] right-[30%] z-10 pointer-events-none opacity-50" style={{ animation: 'floatBat 8s ease-in-out infinite reverse', transform: 'scale(0.8)' }}>
+            <div className="bat"></div>
+          </div>
+
+          <style dangerouslySetInnerHTML={{__html: `
+            @keyframes floatBat {
+              0%, 100% { transform: translateY(0) translateX(0); }
+              50% { transform: translateY(-30px) translateX(20px); }
+            }
+          `}} />
+
           {/* Latar Belakang Animasi Pattern */}
           <div className="absolute inset-0 opacity-10" style={{ 
             backgroundImage: "radial-gradient(#EAE0CF 2px, transparent 2px)", 
