@@ -121,12 +121,13 @@ export function WelcomeScreen() {
             <motion.div
               animate={{ rotate: [0, 5, -5, 0] }}
               transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="inline-block mb-6 bg-surface p-4 rounded-3xl neo-brutalist-shadow border-4 border-border"
+              className="inline-block mb-6"
             >
               <img 
                 src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXBmczJsZWpuMWhmOXhxejN2eWpnNjA5M3c0dzVkbWp0Yno5NzN0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OE6p9om0CgWDKguefr/giphy.gif" 
                 alt="Mascot" 
-                className="w-24 h-24 md:w-32 md:h-32 object-contain"
+                className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-xl"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
             </motion.div>
             
