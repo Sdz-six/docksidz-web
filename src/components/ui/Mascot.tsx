@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import { MascotGame } from "./MascotGame";
 
 export function Mascot() {
-  const [mascotSrc, setMascotSrc] = useState("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXBmczJsZWpuMWhmOXhxejN2eWpnNjA5M3c0dzVkbWp0Yno5NzN0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OE6p9om0CgWDKguefr/giphy.gif");
+  const [mascotSrc, setMascotSrc] = useState("/anime-menhera-transparent.gif");
   const [isGameOpen, setIsGameOpen] = useState(false);
   
   const clickCountRef = useRef(0);
@@ -50,7 +50,6 @@ export function Mascot() {
           alt="DockSidz Mascot"
           onClick={handleMascotClick}
           className="w-full h-auto transition-all duration-500 pointer-events-auto cursor-pointer"
-          style={{ mixBlendMode: 'multiply' }}
         />
       </motion.div>
     </>
