@@ -119,16 +119,11 @@ export function WelcomeScreen() {
             className="relative z-10 text-center max-w-2xl px-6"
           >
             <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="inline-block mb-6"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+              className="inline-block mb-6 bg-surface p-6 rounded-3xl neo-brutalist-shadow border-4 border-border"
             >
-              <img 
-                src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXBmczJsZWpuMWhmOXhxejN2eWpnNjA5M3c0dzVkbWp0Yno5NzN0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OE6p9om0CgWDKguefr/giphy.gif" 
-                alt="Mascot" 
-                className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-xl"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
+              <FileCode2 className="w-16 h-16 text-primary" />
             </motion.div>
             
             <h1 className="text-5xl md:text-7xl font-black mb-6 text-text tracking-tight">

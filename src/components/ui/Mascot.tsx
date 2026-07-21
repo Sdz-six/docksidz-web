@@ -5,29 +5,13 @@ import { useState, useEffect, useRef } from "react";
 import { MascotGame } from "./MascotGame";
 
 export function Mascot() {
-  const [mascotSrc, setMascotSrc] = useState("off");
+  const [mascotSrc, setMascotSrc] = useState("https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXBmczJsZWpuMWhmOXhxejN2eWpnNjA5M3c0dzVkbWp0Yno5NzN0YyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/OE6p9om0CgWDKguefr/giphy.gif");
   const [isGameOpen, setIsGameOpen] = useState(false);
   
   const clickCountRef = useRef(0);
   const clickTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    // Muat preferensi maskot dari localStorage jika ada
-    const savedMascot = localStorage.getItem("docksidz_mascot");
-    if (savedMascot) {
-      setMascotSrc(savedMascot);
-    }
-
-    // Dengarkan perubahan dari controller
-    const handleMascotChange = (e: any) => {
-      setMascotSrc(e.detail);
-      localStorage.setItem("docksidz_mascot", e.detail);
-    };
-
-    window.addEventListener("mascot-changed", handleMascotChange);
-    return () => window.removeEventListener("mascot-changed", handleMascotChange);
-  }, []);
-
+  // Mascot event listener dihapus karena mascot selalu menggunakan GIF
   const handleMascotClick = () => {
     clickCountRef.current += 1;
     
@@ -65,7 +49,8 @@ export function Mascot() {
           src={mascotSrc}
           alt="DockSidz Mascot"
           onClick={handleMascotClick}
-          className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] grayscale hover:grayscale-0 transition-all duration-500 pointer-events-auto cursor-pointer"
+          className="w-full h-auto transition-all duration-500 pointer-events-auto cursor-pointer"
+          style={{ mixBlendMode: 'multiply' }}
         />
       </motion.div>
     </>

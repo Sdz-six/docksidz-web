@@ -191,51 +191,7 @@ export function WebTraffic() {
           </div>
         </div>
 
-        {/* Waifu / Mascot Controller */}
-        <div className="mt-6 max-w-lg mx-auto bg-[#2A303C]/70 backdrop-blur-md rounded-xl p-4 border border-white/5 flex flex-col items-center shadow-lg">
-          <div className="flex items-center gap-2 mb-3 text-[#E2E8F0] font-bold">
-            <Users className="w-5 h-5 text-[#8B5CF6]" />
-            <span>Asisten Virtual: Pilih Mascot Anda</span>
-          </div>
-          <div className="flex flex-wrap justify-center gap-2 bg-black/40 rounded-lg p-2 w-full relative">
-            <button
-              onClick={() => changeMascot("off")}
-              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "off" ? "bg-red-500 text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
-            >
-              Mati
-            </button>
-            <button
-              onClick={() => changeMascot("/mascot.png")}
-              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
-            >
-              Mascot 1
-            </button>
-            <button
-              onClick={() => changeMascot("/mascot2.png")}
-              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot2.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
-            >
-              Mascot 2
-            </button>
-            <button
-              onClick={() => changeMascot("/mascot3.png")}
-              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot3.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
-            >
-              Mascot 3
-            </button>
-            <button
-              onClick={() => changeMascot("/mascot4.png")}
-              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot4.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
-            >
-              Mascot 4
-            </button>
-            <button
-              onClick={() => changeMascot("/mascot5.png")}
-              className={`flex-1 min-w-[70px] py-2 text-sm font-semibold rounded-md transition-all z-10 ${selectedMascot === "/mascot5.png" ? "bg-[#8B5CF6] text-white shadow-md" : "text-[#9CA3AF] hover:text-white"}`}
-            >
-              Mascot 5
-            </button>
-          </div>
-        </div>
+        {/* Waifu / Mascot Controller telah dihapus */}
 
         {/* Papan Coretan Tamu (Spesial UI) */}
         <div className="mt-12 max-w-2xl mx-auto">
